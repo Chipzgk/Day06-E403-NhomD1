@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI.20K - Cohort 2 | Day 06</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-    
-    <!-- THÊM THƯ VIỆN PDF.JS ĐỂ HỖ TRỢ BÔI ĐEN TEXT CHUẨN XÁC -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
 
@@ -45,27 +43,24 @@
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: #e8edf4;
+            width: 100%;
+            height: 100vh;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px
+            overflow: hidden;
         }
 
         .app {
             display: flex;
             width: 100%;
-            max-width: 1100px;
-            height: 680px;
-            border-radius: var(--radius-lg);
+            height: 100vh;
             overflow: hidden;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, .18);
             background: var(--bg)
         }
 
         .sidebar {
-            width: 248px;
-            min-width: 248px;
+            flex: 0 0 240px;
+            width: 240px;
+            min-width: 240px;
             background: var(--sidebar-bg);
             color: #fff;
             display: flex;
@@ -162,11 +157,13 @@
         }
 
         .main {
-            flex: 1;
+            flex: 1 1 auto;
+            min-width: 0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: var(--bg)
+            background: var(--bg);
+            transition: flex-basis 320ms cubic-bezier(0.4, 0, 0.2, 1)
         }
 
         .topbar {
@@ -294,10 +291,21 @@
             font-weight: 600
         }
 
-        /* VÙNG CHỨA PDF BẰNG PDF.JS */
+        .pdf-area {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #525659;
+        }
+
         .content {
             flex: 1;
             overflow-y: auto;
+            overflow-x: auto;
             padding: 0;
             background-color: #525659;
             display: flex;
@@ -311,14 +319,13 @@
         .pdf-page-container {
             position: relative;
             background: #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         .pdf-canvas {
             display: block;
         }
 
-        /* ── CSS Dành riêng cho textLayer của PDF.js để highlight ── */
         .textLayer {
             position: absolute;
             left: 0;
@@ -326,11 +333,18 @@
             right: 0;
             bottom: 0;
             overflow: hidden;
-            opacity: 0.2;
+            opacity: 1;
             line-height: 1.0;
+            text-align: initial;
+            transform-origin: 0 0;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+            forced-color-adjust: none;
+            z-index: 2;
         }
 
-        .textLayer span {
+        .textLayer span,
+        .textLayer br {
             color: transparent;
             position: absolute;
             white-space: pre;
@@ -338,11 +352,27 @@
             transform-origin: 0% 0%;
         }
 
+        .textLayer span::selection {
+            background: rgba(0, 114, 255, 0.4);
+        }
+
+        .textLayer .endOfContent {
+            display: block;
+            position: absolute;
+            inset: 100% 0 0;
+            z-index: -1;
+            cursor: default;
+            user-select: none;
+        }
+
+        .textLayer.selecting .endOfContent {
+            top: 0;
+        }
+
         ::selection {
             background: rgba(0, 114, 255, 0.4);
         }
 
-        /* Các CSS còn lại giữ nguyên */
         .mapping-table {
             width: 100%;
             border-collapse: collapse;
@@ -562,64 +592,59 @@
         }
 
         .plan-section {
-            margin-bottom: 12px;
-            padding: 10px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            border: .5px solid var(--border)
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB
         }
 
         .plan-section-title {
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 5px
+            gap: 5px;
+            text-transform: uppercase
         }
 
         .plan-steps {
             display: flex;
             flex-direction: column;
-            gap: 4px
+            gap: 8px
         }
 
         .plan-step {
             display: flex;
-            align-items: flex-start;
-            gap: 6px
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
+            padding: 7px 8px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            background: #fff;
+            transition: background .15s, border-color .15s
+        }
+
+        .plan-step:hover {
+            background: #F9FAFB;
+            border-color: #D1D5DB
         }
 
         .plan-num {
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            background: var(--accent);
+            background: var(--sidebar-bg);
             color: #fff;
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            margin-top: 3px
-        }
-
-        .plan-input {
-            flex: 1;
-            border: .5px solid var(--border);
-            border-radius: 4px;
-            padding: 4px 7px;
-            font-size: 11px;
-            color: var(--text);
-            background: var(--bg);
-            font-family: inherit
-        }
-
-        .plan-input:focus {
-            outline: none;
-            border-color: var(--accent)
         }
 
         .spinner {
@@ -703,42 +728,38 @@
             transition: width linear
         }
 
-        .ask-bar {
-            padding: 10px 20px;
-            border-top: .5px solid var(--border);
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            gap: 12px
-        }
-
-        .ask-hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            flex: 1
-        }
-
-        .ask-hint span {
-            background: var(--warn-bg);
-            color: var(--warn-text);
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-weight: 600
-        }
-
         .ask-btn {
             background: var(--sidebar-bg);
             color: #fff;
             border: none;
-            border-radius: var(--radius-md);
-            padding: 9px 18px;
-            font-size: 13px;
+            border-radius: 8px 0 0 8px;
+            padding: 8px 0;
+            width: 32px;
+            height: 80px;
+            font-size: 11px;
             cursor: pointer;
             display: flex;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            z-index: 20;
+            transform: translateY(-50%);
+            justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             font-weight: 500;
-            transition: background .15s
+            box-shadow: -2px 0 10px rgba(0, 0, 0, .18);
+            transition: background .15s, opacity .15s
+        }
+
+        .ask-btn i {
+            font-size: 14px
+        }
+
+        .ask-btn-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap
         }
 
         .ask-btn:hover {
@@ -750,37 +771,315 @@
             cursor: not-allowed
         }
 
+        body:has(.overlay.show) .ask-btn {
+            opacity: 0;
+            pointer-events: none
+        }
+
         .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .45);
-            z-index: 200;
-            align-items: center;
-            justify-content: center
+            display: flex;
+            flex: 0 0 0;
+            width: 0;
+            min-width: 0;
+            height: 100%;
+            position: relative;
+            background: transparent;
+            z-index: 30;
+            align-items: stretch;
+            justify-content: flex-start;
+            overflow: hidden;
+            transition: flex-basis 320ms cubic-bezier(0.4, 0, 0.2, 1), width 320ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 320ms cubic-bezier(0.4, 0, 0.2, 1)
         }
 
         .overlay.show {
-            display: flex
+            flex-basis: 380px;
+            width: 380px;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, .08)
         }
 
         .popup {
             background: var(--bg);
-            border-radius: var(--radius-lg);
-            border: .5px solid var(--border);
-            padding: 28px;
-            width: 520px;
-            max-width: 92vw;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, .2);
-            max-height: 90vh;
-            overflow-y: auto
+            border-left: 1px solid #E5E7EB;
+            padding: 0;
+            width: 380px;
+            min-width: 380px;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1)
         }
 
-        .popup-title {
-            font-size: 17px;
+        .overlay.show .popup {
+            transform: translateX(0)
+        }
+
+        .panel-header {
+            flex: 0 0 56px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 0 16px;
+            background: #fff;
+            border-bottom: 1px solid #F3F4F6
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0
+        }
+
+        .panel-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px
+        }
+
+        .panel-title-text {
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 16px;
             color: var(--text)
+        }
+
+        .panel-close {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0
+        }
+
+        .panel-tabs {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 6px;
+            padding: 10px 12px;
+            background: #fff;
+            border-bottom: 1px solid #F3F4F6
+        }
+
+        .panel-tab {
+            flex: 1;
+            height: 36px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background .15s, color .15s, border-color .15s
+        }
+
+        .panel-tab:hover {
+            background: var(--bg-secondary);
+            color: var(--text)
+        }
+
+        .panel-tab.active {
+            background: var(--info-bg);
+            color: var(--info-text);
+            border-color: rgba(30, 58, 95, .18)
+        }
+
+        .panel-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px 20px 0;
+            background: #fff
+        }
+
+        .panel-tab-view {
+            display: none;
+            min-height: 100%;
+        }
+
+        .panel-tab-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #popup-input-view {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column
+        }
+
+        #popup-result-view {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column
+        }
+
+        .result-status {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 10px
+        }
+
+        .result-status span {
+            min-width: 0;
+            line-height: 1.4
+        }
+
+        #popup-result-content {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: visible
+        }
+
+        #history-section {
+            margin-bottom: 14px
+        }
+
+        .input-section {
+            flex: 1 1 auto
+        }
+
+        .chat-pane {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 2px 0 14px;
+        }
+
+        .chat-empty {
+            margin: auto 0;
+            padding: 18px 14px;
+            border: 1px dashed #D1D5DB;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: center;
+            background: #F9FAFB
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start
+        }
+
+        .chat-message.user {
+            justify-content: flex-end
+        }
+
+        .chat-bubble {
+            max-width: 86%;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 9px 11px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--text);
+            background: #fff;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere
+        }
+
+        .chat-message.user .chat-bubble {
+            background: var(--sidebar-bg);
+            border-color: var(--sidebar-bg);
+            color: #fff
+        }
+
+        .chat-message.assistant .chat-bubble {
+            background: var(--bg-secondary)
+        }
+
+        .chat-composer {
+            position: sticky;
+            bottom: 0;
+            z-index: 9;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            margin: auto -20px 0;
+            padding: 10px 20px;
+            background: #fff;
+            border-top: 1px solid #F3F4F6
+        }
+
+        .chat-input {
+            flex: 1;
+            min-height: 44px;
+            max-height: 120px;
+            resize: vertical;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--text);
+            background: #fff;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s
+        }
+
+        .chat-input:focus {
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .14)
+        }
+
+        .chat-send {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 18px;
+            transition: background .15s, opacity .15s
+        }
+
+        .chat-send:hover {
+            background: var(--accent-dark)
+        }
+
+        .chat-send:disabled,
+        .chat-input:disabled {
+            opacity: .55;
+            cursor: not-allowed
         }
 
         .popup label {
@@ -792,19 +1091,41 @@
 
         .popup input[type=text] {
             width: 100%;
-            border: .5px solid var(--border-secondary);
-            border-radius: var(--radius-md);
-            padding: 10px 14px;
+            height: 44px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            padding: 0 14px;
             font-size: 14px;
             margin-bottom: 4px;
             color: var(--text);
             background: var(--bg);
             outline: none;
-            transition: border-color .15s
+            transition: border-color .15s, box-shadow .15s
         }
 
         .popup input[type=text]:focus {
-            border-color: var(--accent)
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .14)
+        }
+
+        .plan-input {
+            flex: 1;
+            min-width: 0;
+            border: 0;
+            border-radius: 6px;
+            padding: 2px 4px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text);
+            background: transparent;
+            font-family: inherit;
+            outline: none;
+            overflow-wrap: anywhere
+        }
+
+        .plan-input:focus {
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, .14)
         }
 
         .input-hint {
@@ -819,8 +1140,16 @@
 
         .popup-btns {
             display: flex;
-            gap: 8px;
-            justify-content: flex-end
+            gap: 10px;
+            justify-content: stretch;
+            position: sticky;
+            bottom: 0;
+            z-index: 9;
+            min-height: 64px;
+            margin: auto -20px 0;
+            padding: 10px 20px;
+            background: #fff;
+            border-top: 1px solid #F3F4F6
         }
 
         .btn-cancel {
@@ -830,7 +1159,8 @@
             padding: 9px 18px;
             font-size: 13px;
             cursor: pointer;
-            color: var(--text-muted)
+            color: var(--text-muted);
+            min-height: 38px
         }
 
         .btn-cancel:hover {
@@ -850,6 +1180,13 @@
             align-items: center;
             gap: 6px;
             transition: background .15s
+        }
+
+        .popup-btns .btn-cancel,
+        .popup-btns .btn-send {
+            flex: 1;
+            height: 44px;
+            justify-content: center
         }
 
         .btn-send:hover {
@@ -879,7 +1216,6 @@
             margin-bottom: 12px
         }
 
-        /* ── History panel ── */
         .history-toggle {
             font-size: 11px;
             color: var(--accent);
@@ -952,6 +1288,61 @@
             text-decoration: underline;
             margin-left: auto
         }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                flex: 1 1 100%;
+                width: 100%
+            }
+
+            .overlay {
+                position: fixed;
+                inset: 0 0 0 auto;
+                width: 100vw;
+                height: 100vh;
+                flex: 0 0 auto;
+                transform: translateX(100%);
+                transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 200
+            }
+
+            .overlay.show {
+                width: 100vw;
+                flex-basis: auto;
+                transform: translateX(0);
+                box-shadow: none
+            }
+
+            .popup {
+                width: 100vw;
+                min-width: 100vw;
+                border-left: 0;
+                transform: none
+            }
+
+            .panel-body {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            .popup-btns {
+                margin-left: -16px;
+                margin-right: -16px;
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            .chat-composer {
+                margin-left: -16px;
+                margin-right: -16px;
+                padding-left: 16px;
+                padding-right: 16px
+            }
+        }
     </style>
 </head>
 
@@ -996,107 +1387,153 @@
         </aside>
 
         <main class="main">
+            <div class="pdf-area">
+                <div class="content" id="pdf-container">
+                    <div style="color:white; margin-top: 20px;">Đang tải PDF...</div>
+                </div>
 
-            <!-- VÙNG CHỨA PDF ĐÃ ĐƯỢC CHUYỂN SANG DÙNG PDF.JS -->
-            <div class="content" id="pdf-container">
-                <div style="color:white; margin-top: 20px;">Đang tải PDF...</div>
-            </div>
-
-            <div class="ask-bar">
-                <div class="ask-hint" id="ask-hint">Bôi đen một từ trong nội dung, rồi bấm <span>Thư ký Kim</span></div>
-                <button class="ask-btn" id="ask-btn">
-                    <i class="ti ti-message-question"></i> Thư ký Kim
+                <button class="ask-btn" id="ask-btn" type="button" aria-label="Mở Thư ký Kim">
+                    <i class="ti ti-sparkles"></i>
+                    <span class="ask-btn-label">Thư ký Kim</span>
                 </button>
             </div>
         </main>
-    </div>
 
-    <div class="overlay" id="overlay">
-        <div class="popup">
-            <div id="popup-input-view">
-                <div class="popup-title">Thư ký Kim</div>
-
-                <div id="history-section">
-                    <div class="history-toggle" id="history-toggle" onclick="toggleHistory()">
-                        <i class="ti ti-history" style="font-size:12px"></i>
-                        <span id="history-toggle-label">Lịch sử đã hỏi</span>
-                        <i class="ti ti-chevron-down" id="history-chevron" style="font-size:11px;margin-left:2px"></i>
-                        <button class="history-clear-all" id="history-clear-all"
-                            onclick="event.stopPropagation();clearAllHistory()" style="display:none">Xoá tất cả</button>
+        <div class="overlay" id="overlay">
+            <div class="popup">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <div class="panel-avatar"><i class="ti ti-robot"></i></div>
+                        <div class="panel-title-text">Thư ký Kim</div>
                     </div>
-                    <div id="history-list-wrap" style="display:none">
-                        <div class="history-list" id="history-list"></div>
+                    <button class="btn-cancel panel-close" id="popup-close" type="button"
+                        aria-label="Đóng Thư ký Kim">✕</button>
+                </div>
+
+                <div class="panel-tabs" role="tablist" aria-label="Thư ký Kim tools">
+                    <button class="panel-tab active" id="kim-tab" type="button" role="tab" aria-selected="true"
+                        aria-controls="kim-tab-panel" data-panel-tab="kim">
+                        <i class="ti ti-sparkles"></i> Thư ký Kim
+                    </button>
+                    <button class="panel-tab" id="chat-tab" type="button" role="tab" aria-selected="false"
+                        aria-controls="chat-tab-panel" data-panel-tab="chat">
+                        <i class="ti ti-message-circle"></i> Chatbot
+                    </button>
+                </div>
+
+                <div class="panel-body">
+                    <div class="panel-tab-view active" id="kim-tab-panel" role="tabpanel" aria-labelledby="kim-tab">
+                        <div id="popup-input-view">
+                            <div id="history-section">
+                                <div class="history-toggle" id="history-toggle" onclick="toggleHistory()">
+                                    <i class="ti ti-history" style="font-size:12px"></i>
+                                    <span id="history-toggle-label">Lịch sử đã hỏi</span>
+                                    <i class="ti ti-chevron-down" id="history-chevron"
+                                        style="font-size:11px;margin-left:2px"></i>
+                                    <button class="history-clear-all" id="history-clear-all"
+                                        onclick="event.stopPropagation();clearAllHistory()" style="display:none">Xoá tất
+                                        cả</button>
+                                </div>
+                                <div id="history-list-wrap" style="display:none">
+                                    <div class="history-list" id="history-list"></div>
+                                </div>
+                            </div>
+
+                            <div class="plan-section">
+                                <div class="plan-section-title"><i class="ti ti-list-check" style="font-size:13px"></i>
+                                    Kế hoạch (có thể chỉnh)</div>
+                                <div class="plan-steps">
+                                    <div class="plan-step"><span class="plan-num">1</span><span class="plan-input"
+                                            contenteditable="true" role="textbox">Kiểm tra khái niệm trong domain
+                                            AI</span></div>
+                                    <div class="plan-step"><span class="plan-num">2</span><span class="plan-input"
+                                            contenteditable="true" role="textbox">Đánh giá độ cụ thể của sở thích</span>
+                                    </div>
+                                    <div class="plan-step"><span class="plan-num">3</span><span class="plan-input"
+                                            contenteditable="true" role="textbox">Map thành phần kỹ thuật sang ngữ cảnh
+                                            quen thuộc</span></div>
+                                    <div class="plan-step"><span class="plan-num">4</span><span class="plan-input"
+                                            contenteditable="true" role="textbox">Viết analogy narrative</span></div>
+                                    <div class="plan-step"><span class="plan-num">5</span><span class="plan-input"
+                                            contenteditable="true" role="textbox">Tạo bảng mapping để bạn kiểm
+                                            tra</span></div>
+                                </div>
+                            </div>
+
+                            <div class="input-section">
+                                <!-- ĐÃ ĐỔI: sở thích lên trước, khái niệm xuống sau -->
+                                <label>Sở thích của bạn là gì?</label>
+                                <input type="text" id="interest-input"
+                                    placeholder="Ví dụ: bóng đá, nấu ăn, âm nhạc cụ thể...">
+                                <div class="input-hint" id="interest-hint"></div>
+
+                                <label>Khái niệm bạn muốn hỏi là gì?</label>
+                                <input type="text" id="concept-input" placeholder="Ví dụ: RAG, Agent, LLM...">
+                                <div class="input-hint" id="concept-hint"></div>
+                            </div>
+
+                            <div class="popup-btns">
+                                <button class="btn-cancel" id="btn-cancel">Huỷ</button>
+                                <button class="btn-send" id="btn-send">Gửi <i class="ti ti-send"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="popup-result-view" style="display:none">
+                            <div class="result-status">
+                                <div class="spinner" id="popup-spinner"></div>
+                                <span id="popup-result-label"
+                                    style="font-size:13px;font-weight:600;color:var(--text-muted)">Vui
+                                    lòng đợi thư ký Kim...</span>
+                            </div>
+                            <div class="timeout-bar" style="margin-bottom:10px">
+                                <div class="timeout-fill" id="popup-timeout-fill"></div>
+                            </div>
+                            <div class="showing-work" id="showing-work" style="display:none">
+                                <div class="work-steps" id="work-steps">
+                                    <div class="work-step" data-step="1"><i
+                                            class="ti ti-circle step-icon"></i><span>Kiểm tra khái
+                                            niệm trong domain AI</span></div>
+                                    <div class="work-step" data-step="2"><i
+                                            class="ti ti-circle step-icon"></i><span>Đánh giá độ cụ
+                                            thể của sở thích</span></div>
+                                    <div class="work-step" data-step="3"><i class="ti ti-circle step-icon"></i><span>Map
+                                            thành phần
+                                            kỹ thuật</span></div>
+                                    <div class="work-step" data-step="4"><i
+                                            class="ti ti-circle step-icon"></i><span>Viết analogy
+                                            narrative</span></div>
+                                    <div class="work-step" data-step="5"><i class="ti ti-circle step-icon"></i><span>Tạo
+                                            bảng
+                                            mapping</span></div>
+                                </div>
+                            </div>
+                            <div id="popup-result-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel-tab-view" id="chat-tab-panel" role="tabpanel" aria-labelledby="chat-tab" hidden>
+                        <div class="chat-pane">
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="chat-empty">Bạn muốn đào sâu phần nào trong bài học?</div>
+                            </div>
+                            <div class="chat-composer">
+                                <textarea class="chat-input" id="chat-input" rows="1"
+                                    placeholder="Nhập câu hỏi học tập..."></textarea>
+                                <button class="chat-send" id="chat-send" type="button" aria-label="Gửi câu hỏi">
+                                    <i class="ti ti-send"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="plan-section">
-                    <div class="plan-section-title"><i class="ti ti-list-check" style="font-size:13px"></i> Kế hoạch (có
-                        thể chỉnh)</div>
-                    <div class="plan-steps">
-                        <div class="plan-step"><span class="plan-num">1</span><input class="plan-input"
-                                value="Kiểm tra khái niệm trong domain AI"></div>
-                        <div class="plan-step"><span class="plan-num">2</span><input class="plan-input"
-                                value="Đánh giá độ cụ thể của sở thích"></div>
-                        <div class="plan-step"><span class="plan-num">3</span><input class="plan-input"
-                                value="Map thành phần kỹ thuật sang ngữ cảnh quen thuộc"></div>
-                        <div class="plan-step"><span class="plan-num">4</span><input class="plan-input"
-                                value="Viết analogy narrative"></div>
-                        <div class="plan-step"><span class="plan-num">5</span><input class="plan-input"
-                                value="Tạo bảng mapping để bạn kiểm tra"></div>
-                    </div>
-                </div>
-
-                <label>Khái niệm bạn muốn hỏi là gì?</label>
-                <input type="text" id="concept-input" placeholder="Ví dụ: RAG, Agent, LLM...">
-                <div class="input-hint" id="concept-hint"></div>
-
-                <label>Sở thích của bạn là gì?</label>
-                <input type="text" id="interest-input" placeholder="Ví dụ: bóng đá, nấu ăn, âm nhạc cụ thể...">
-                <div class="input-hint" id="input-hint"></div>
-
-                <div class="popup-btns">
-                    <button class="btn-cancel" id="btn-cancel">Huỷ</button>
-                    <button class="btn-send" id="btn-send">Gửi <i class="ti ti-send"></i></button>
-                </div>
-            </div>
-
-            <div id="popup-result-view" style="display:none">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                    <div style="display:flex;align-items:center;gap:8px">
-                        <div class="spinner" id="popup-spinner"></div>
-                        <span id="popup-result-label" style="font-size:13px;font-weight:600;color:var(--text-muted)">Vui
-                            lòng đợi thư ký Kim...</span>
-                    </div>
-                    <button class="btn-cancel" id="popup-close" style="padding:4px 10px;font-size:12px">✕</button>
-                </div>
-                <div class="timeout-bar" style="margin-bottom:10px">
-                    <div class="timeout-fill" id="popup-timeout-fill"></div>
-                </div>
-                <div class="showing-work" id="showing-work" style="display:none">
-                    <div class="work-steps" id="work-steps">
-                        <div class="work-step" data-step="1"><i class="ti ti-circle step-icon"></i><span>Kiểm tra khái
-                                niệm trong domain AI</span></div>
-                        <div class="work-step" data-step="2"><i class="ti ti-circle step-icon"></i><span>Đánh giá độ cụ
-                                thể của sở thích</span></div>
-                        <div class="work-step" data-step="3"><i class="ti ti-circle step-icon"></i><span>Map thành phần
-                                kỹ thuật</span></div>
-                        <div class="work-step" data-step="4"><i class="ti ti-circle step-icon"></i><span>Viết analogy
-                                narrative</span></div>
-                        <div class="work-step" data-step="5"><i class="ti ti-circle step-icon"></i><span>Tạo bảng
-                                mapping</span></div>
-                    </div>
-                </div>
-                <div id="popup-result-content" style="max-height:380px;overflow-y:auto"></div>
             </div>
         </div>
     </div>
 
     <script>
         // ════════════════════════════════════════════════════════════
-        // MỚI: XỬ LÝ PDF VỚI PDF.JS
+        // PDF.JS
         // ════════════════════════════════════════════════════════════
-        
-        // Trỏ tới Worker của PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         let currentPdf = null;
@@ -1104,16 +1541,14 @@
 
         async function renderPage(pageNum, pdfDoc, container) {
             const page = await pdfDoc.getPage(pageNum);
-            const scale = 1.3; // Độ zoom (có thể chỉnh to nhỏ tùy ý)
+            const scale = 1.3;
             const viewport = page.getViewport({ scale: scale });
 
-            // Div bọc trang
             const pageDiv = document.createElement('div');
             pageDiv.className = 'pdf-page-container';
             pageDiv.style.width = `${viewport.width}px`;
             pageDiv.style.height = `${viewport.height}px`;
 
-            // Canvas để vẽ PDF
             const canvas = document.createElement('canvas');
             canvas.className = 'pdf-canvas';
             const context = canvas.getContext('2d');
@@ -1121,30 +1556,25 @@
             canvas.width = viewport.width;
             pageDiv.appendChild(canvas);
 
-            // Layer chứa text HTML (trong suốt đè lên trên để bôi đen)
             const textLayerDiv = document.createElement('div');
             textLayerDiv.className = 'textLayer';
             textLayerDiv.style.width = `${viewport.width}px`;
             textLayerDiv.style.height = `${viewport.height}px`;
+            textLayerDiv.style.setProperty('--scale-factor', scale);
             pageDiv.appendChild(textLayerDiv);
 
             container.appendChild(pageDiv);
 
-            // Render PDF -> Canvas
-            const renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-            await page.render(renderContext).promise;
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-            // Lấy data text -> Render HTML TextLayer
-            const textContent = await page.getTextContent();
-            pdfjsLib.renderTextLayer({
+            const textContent = await page.getTextContent({ includeMarkedContent: true });
+            const textLayerTask = pdfjsLib.renderTextLayer({
                 textContentSource: textContent,
                 container: textLayerDiv,
                 viewport: viewport,
                 textDivs: []
             });
+            await textLayerTask.promise;
         }
 
         async function loadPDF(url) {
@@ -1152,9 +1582,7 @@
             try {
                 const loadingTask = pdfjsLib.getDocument(url);
                 currentPdf = await loadingTask.promise;
-                pdfContainer.innerHTML = ''; // Xóa loading
-
-                // Render tất cả các trang
+                pdfContainer.innerHTML = '';
                 for (let pageNum = 1; pageNum <= currentPdf.numPages; pageNum++) {
                     await renderPage(pageNum, currentPdf, pdfContainer);
                 }
@@ -1163,53 +1591,86 @@
             }
         }
 
-        // Khởi chạy load PDF lần đầu tiên cho item active
         const initItem = document.querySelector('.nav-item.active');
         if (initItem) loadPDF(initItem.getAttribute('data-pdf'));
 
         // ════════════════════════════════════════════════════════════
-        // XỬ LÝ CHUYỂN BÀI HỌC BÊN SIDEBAR 
+        // SIDEBAR NAV
         // ════════════════════════════════════════════════════════════
         const navItems = document.querySelectorAll('.nav-item');
-
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-
                 const pdfPath = item.getAttribute('data-pdf');
-                if (pdfPath) {
-                    loadPDF(pdfPath);
-                }
+                if (pdfPath) loadPDF(pdfPath);
             });
         });
 
         // ════════════════════════════════════════════════════════════
-        // BẮT SỰ KIỆN BÔI ĐEN CHỮ (Bao gồm cả trong Text Layer của PDF)
+        // BÔI ĐEN TEXT
         // ════════════════════════════════════════════════════════════
-        document.addEventListener('mouseup', () => {
-            const sel = window.getSelection();
-            const text = sel ? sel.toString().trim() : '';
-            const askHint = document.getElementById('ask-hint');
+        function cleanSelectionText(text) {
+            return String(text || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+        }
 
-            // Chỉ bắt những đoạn bôi đen độ dài hợp lý
+        function isSelectionWordChar(ch) {
+            return /[\p{L}\p{N}_+#./:-]/u.test(ch);
+        }
+
+        function expandRangeToWordBoundaries(range) {
+            const expanded = range.cloneRange();
+            const startNode = range.startContainer;
+            const endNode = range.endContainer;
+            if (startNode && startNode.nodeType === Node.TEXT_NODE) {
+                const text = startNode.textContent || '';
+                let start = range.startOffset;
+                while (start > 0 && isSelectionWordChar(text[start - 1])) start--;
+                expanded.setStart(startNode, start);
+            }
+            if (endNode && endNode.nodeType === Node.TEXT_NODE) {
+                const text = endNode.textContent || '';
+                let end = range.endOffset;
+                while (end < text.length && isSelectionWordChar(text[end])) end++;
+                expanded.setEnd(endNode, end);
+            }
+            return expanded;
+        }
+
+        function getSelectedText() {
+            const sel = window.getSelection();
+            if (!sel || !sel.rangeCount || sel.isCollapsed) return '';
+            const rawText = cleanSelectionText(sel.toString());
+            const expandedText = cleanSelectionText(expandRangeToWordBoundaries(sel.getRangeAt(0)).toString());
+            return expandedText || rawText;
+        }
+
+        document.addEventListener('mousedown', e => {
+            const layer = e.target.closest && e.target.closest('.textLayer');
+            if (layer) layer.classList.add('selecting');
+        });
+
+        document.addEventListener('mouseup', () => {
+            document.querySelectorAll('.textLayer.selecting').forEach(layer => layer.classList.remove('selecting'));
+
+            const text = getSelectedText();
+            // Khi bôi đen → điền vào ô KHÁI NIỆM (concept-input)
             if (text.length > 1 && text.length < 80) {
                 selectedConcept = text;
-                document.getElementById('concept-input').value = text;
-                document.getElementById('concept-hint').textContent = '';
-                document.getElementById('concept-input').style.borderColor = '';
-                
-                askHint.innerHTML = `Khái niệm đã chọn: <span>${escHtml(text)}</span> — Bấm Thư ký Kim`;
-            } 
-            // Nếu click ra chỗ khác không bôi chữ, có thể reset lại giao diện (tuỳ chọn)
+                conceptInput.value = text;
+                conceptHint.textContent = '';
+                conceptInput.style.borderColor = '';
+            }
         });
 
         // ════════════════════════════════════════════════════════════
-        // CONFIG & CÁC BIẾN CŨ CỦA APP
+        // CONFIG & BIẾN
         // ════════════════════════════════════════════════════════════
         const TIMEOUT_MS = 25_000;
         const API_URL = '/api/analogy';
+        const CHAT_API_URL = '/api/chat';
         const LS_KEY = 'thu_ky_kim_history';
+        const LS_INTEREST_KEY = 'thu_ky_kim_interest';
         const MAX_HISTORY = 50;
 
         let selectedConcept = '';
@@ -1217,13 +1678,17 @@
         let lastInterest = '';
         let workTimer = null;
         let historyOpen = false;
+        let chatHistory = [];
+        let chatSending = false;
 
         const askBtn = document.getElementById('ask-btn');
         const overlay = document.getElementById('overlay');
+        // concept-input = ô nhập KHÁI NIỆM (RAG, Agent...)
         const conceptInput = document.getElementById('concept-input');
+        // interest-input = ô nhập SỞ THÍCH (bóng đá, nấu ăn...)
         const interestInput = document.getElementById('interest-input');
         const conceptHint = document.getElementById('concept-hint');
-        const inputHint = document.getElementById('input-hint');
+        const interestHint = document.getElementById('interest-hint');
         const btnCancel = document.getElementById('btn-cancel');
         const btnSend = document.getElementById('btn-send');
         const popupClose = document.getElementById('popup-close');
@@ -1233,6 +1698,22 @@
         const popupLabel = document.getElementById('popup-result-label');
         const popupContent = document.getElementById('popup-result-content');
         const showingWork = document.getElementById('showing-work');
+        const panelTabButtons = document.querySelectorAll('[data-panel-tab]');
+        const kimTabPanel = document.getElementById('kim-tab-panel');
+        const chatTabPanel = document.getElementById('chat-tab-panel');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+
+        // ════════════════════════════════════════════════════════════
+        // LOCAL STORAGE: SỞ THÍCH
+        // ════════════════════════════════════════════════════════════
+        function loadSavedInterest() {
+            try { return localStorage.getItem(LS_INTEREST_KEY) || ''; } catch { return ''; }
+        }
+        function saveInterest(val) {
+            try { if (val) localStorage.setItem(LS_INTEREST_KEY, val); } catch { }
+        }
 
         // ════════════════════════════════════════════════════════════
         // VIEWS
@@ -1241,8 +1722,25 @@
         function showResultView() { inputView.style.display = 'none'; resultView.style.display = ''; }
         function closeOverlay() { overlay.classList.remove('show'); showInputView(); stopWork(); }
 
+        function switchPanelTab(tabName) {
+            const isChat = tabName === 'chat';
+            panelTabButtons.forEach(button => {
+                const isActive = button.dataset.panelTab === tabName;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-selected', String(isActive));
+            });
+            kimTabPanel.classList.toggle('active', !isChat);
+            kimTabPanel.hidden = isChat;
+            chatTabPanel.classList.toggle('active', isChat);
+            chatTabPanel.hidden = !isChat;
+            if (isChat) {
+                renderChatMessages();
+                setTimeout(() => chatInput.focus(), 60);
+            }
+        }
+
         // ════════════════════════════════════════════════════════════
-        // HISTORY  (localStorage)
+        // HISTORY
         // ════════════════════════════════════════════════════════════
         function loadHistory() {
             try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
@@ -1262,7 +1760,6 @@
             localStorage.removeItem(LS_KEY);
             renderHistory();
         }
-
         function toggleHistory() {
             historyOpen = !historyOpen;
             document.getElementById('history-list-wrap').style.display = historyOpen ? '' : 'none';
@@ -1270,7 +1767,6 @@
                 ? 'ti ti-chevron-up' : 'ti ti-chevron-down';
             if (historyOpen) renderHistory();
         }
-
         function renderHistory() {
             const arr = loadHistory();
             const list = document.getElementById('history-list');
@@ -1291,7 +1787,6 @@
             </div>
         </div>`).join('');
         }
-
         function loadHistoryItem(idx) {
             const arr = loadHistory();
             const h = arr[idx];
@@ -1306,6 +1801,72 @@
 
         function escHtml(s) {
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // CHATBOT
+        // ════════════════════════════════════════════════════════════
+        function renderChatMessages(extraHtml = '') {
+            if (!chatHistory.length && !extraHtml) {
+                chatMessages.innerHTML = '<div class="chat-empty">Bạn muốn đào sâu phần nào trong bài học?</div>';
+                return;
+            }
+            chatMessages.innerHTML = chatHistory.map(message => `
+        <div class="chat-message ${message.role}">
+            <div class="chat-bubble">${escHtml(message.content)}</div>
+        </div>`).join('') + extraHtml;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function setChatSending(isSending) {
+            chatSending = isSending;
+            chatSend.disabled = isSending;
+            chatInput.disabled = isSending;
+        }
+
+        async function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message || chatSending) return;
+            chatHistory.push({ role: 'user', content: message });
+            chatInput.value = '';
+            renderChatMessages(`
+        <div class="chat-message assistant">
+            <div class="chat-bubble" style="display:flex;align-items:center;gap:8px">
+                <span class="spinner" style="width:12px;height:12px;border-width:1.5px"></span>
+                <span>Đang trả lời...</span>
+            </div>
+        </div>`);
+            setChatSending(true);
+
+            const slideContext = Array.from(
+                document.querySelectorAll('.textLayer span')
+            ).map(s => s.textContent).join(' ').replace(/\s+/g, ' ').trim().slice(0, 2000);
+
+            try {
+                const res = await fetch(CHAT_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: chatHistory.slice(-12),
+                        context: slideContext,
+                    }),
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                chatHistory.push({
+                    role: 'assistant',
+                    content: data.content || 'Mình chưa có câu trả lời phù hợp cho câu hỏi này.',
+                });
+            } catch (err) {
+                chatHistory.push({
+                    role: 'assistant',
+                    content: `Mình chưa kết nối được tới trợ lý học tập. Chi tiết: ${err.message}`,
+                });
+            } finally {
+                setChatSending(false);
+                renderChatMessages();
+                chatInput.focus();
+            }
         }
 
         // ════════════════════════════════════════════════════════════
@@ -1342,40 +1903,78 @@
         }
 
         // ════════════════════════════════════════════════════════════
-        // MỞ POPUP & XỬ LÝ KHÁI NIỆM
+        // MỞ POPUP
         // ════════════════════════════════════════════════════════════
         askBtn.addEventListener('click', () => {
-            // Không xóa ô concept nếu user vừa mới bôi đen
+            // Nếu vừa bôi đen thì giữ nguyên khái niệm đã chọn
             if (!selectedConcept) {
                 conceptInput.value = '';
                 conceptHint.textContent = '';
                 conceptInput.style.borderColor = '';
             }
-            
-            interestInput.value = '';
-            inputHint.textContent = '';
+
+            interestHint.textContent = '';
             interestInput.style.borderColor = '';
 
+            // Tự động điền sở thích đã lưu nếu ô còn trống
+            const saved = loadSavedInterest();
+            if (saved && !interestInput.value.trim()) {
+                interestInput.value = saved;
+            }
+
+            switchPanelTab('kim');
             showInputView();
             renderHistory();
             overlay.classList.add('show');
-            setTimeout(() => conceptInput.focus(), 60);
+            // Có sở thích rồi → focus sở thích để dễ sửa; chưa có → focus sở thích để nhập
+            // Có sở thích rồi + có khái niệm → focus khái niệm
+            setTimeout(() => {
+                if (interestInput.value && conceptInput.value) {
+                    conceptInput.focus();
+                } else {
+                    interestInput.focus();
+                }
+            }, 60);
+        });
+
+        panelTabButtons.forEach(button => {
+            button.addEventListener('click', () => switchPanelTab(button.dataset.panelTab));
+        });
+
+        chatSend.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
         });
 
         btnCancel.addEventListener('click', closeOverlay);
         popupClose.addEventListener('click', closeOverlay);
         overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
 
+        // Enter trong bất kỳ ô nào cũng submit; clear hint khi typing
         [conceptInput, interestInput].forEach(input => {
             input.addEventListener('keydown', e => { if (e.key === 'Enter') btnSend.click(); });
             input.addEventListener('input', () => {
-                input.nextElementSibling.textContent = '';
-                input.style.borderColor = '';
+                // Xác định hint tương ứng
+                if (input === conceptInput) { conceptHint.textContent = ''; conceptInput.style.borderColor = ''; }
+                else { interestHint.textContent = ''; interestInput.style.borderColor = ''; }
             });
         });
 
+        // ════════════════════════════════════════════════════════════
+        // VALIDATE
+        // ════════════════════════════════════════════════════════════
         function validateInputs() {
             let isValid = true;
+
+            // Validate SỞ THÍCH (interest-input)
+            const iVal = interestInput.value.trim();
+            if (iVal.length < 2) {
+                interestHint.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px"></i> Vui lòng nhập sở thích (ít nhất 2 ký tự).';
+                interestInput.classList.remove('shake'); void interestInput.offsetWidth; interestInput.classList.add('shake');
+                isValid = false;
+            }
+
+            // Validate KHÁI NIỆM (concept-input)
             const cVal = conceptInput.value.trim();
             if (cVal.length < 2) {
                 conceptHint.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px"></i> Vui lòng nhập khái niệm (ít nhất 2 ký tự).';
@@ -1383,16 +1982,9 @@
                 isValid = false;
             }
 
-            const iVal = interestInput.value.trim();
-            if (iVal.length < 2) {
-                inputHint.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px"></i> Vui lòng nhập sở thích (ít nhất 2 ký tự).';
-                interestInput.classList.remove('shake'); void interestInput.offsetWidth; interestInput.classList.add('shake');
-                isValid = false;
-            }
-
             if (!isValid) {
-                if (cVal.length < 2) conceptInput.focus();
-                else interestInput.focus();
+                if (iVal.length < 2) interestInput.focus();
+                else conceptInput.focus();
             } else {
                 selectedConcept = cVal;
             }
@@ -1517,7 +2109,7 @@
                 document.getElementById('btn-retype-interest').addEventListener('click', () => {
                     conceptInput.value = lastConcept;
                     interestInput.value = '';
-                    inputHint.textContent = '';
+                    interestHint.textContent = '';
                     interestInput.style.borderColor = '';
                     showInputView();
                     setTimeout(() => interestInput.focus(), 60);
@@ -1547,20 +2139,48 @@
         <div class="followup-section">
             <div class="followup-label"><i class="ti ti-arrow-right" style="font-size:11px"></i> Bước tiếp theo</div>
             <div class="followup-chips" id="followup-chips">
-                <span class="chip" data-q="Giải thích lại bằng ví dụ khác">Ví dụ khác</span>
-                <span class="chip" data-q="Cho ví dụ ${concept} trong RAG">${concept} trong RAG</span>
-                <span class="chip" data-q="Tạo câu hỏi ôn tập về ${concept}">Câu hỏi ôn tập</span>
-                <span class="chip" data-q="So sánh ${concept} với khái niệm liên quan">So sánh khái niệm</span>
+                <span class="chip" id="chip-example">Ví dụ khác</span>
             </div>
             <div id="followup-result"></div>
         </div>`;
 
+            // Chip "Ví dụ khác" → quay về form, giữ khái niệm, xóa sở thích
+            document.getElementById('chip-example').addEventListener('click', () => {
+                conceptInput.value = lastConcept;
+                interestInput.value = '';
+                interestHint.textContent = '';
+                interestInput.style.borderColor = '';
+                showInputView();
+                setTimeout(() => interestInput.focus(), 60);
+            });
+
+            // ── Feedback ──────────────────────────────────────────────
+            async function postFeedback(action, comment = '') {
+                try {
+                    await fetch('/api/feedback', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action, concept, interest,
+                            confidence: data.confidence || 0,
+                            narrative: data.narrative || '',
+                            mapping_table: data.mapping_table || [],
+                            comment,
+                        }),
+                    });
+                } catch (err) {
+                    console.warn('[feedback] gửi thất bại:', err.message);
+                }
+            }
+
             document.getElementById('btn-accept').addEventListener('click', () => {
+                postFeedback('accept');
                 document.getElementById('action-slot').innerHTML = `
             <div style="margin-top:8px;padding:8px 10px;background:var(--success-bg);border-radius:var(--radius-md);font-size:12px;color:var(--success-text);display:flex;align-items:center;gap:6px">
                 <i class="ti ti-check"></i> Đã chấp nhận. Bạn vẫn có thể sửa nếu cần.
             </div>`;
             });
+
             document.getElementById('btn-edit').addEventListener('click', () => {
                 const current = document.getElementById('result-narrative').textContent;
                 document.getElementById('action-slot').innerHTML = `
@@ -1570,14 +2190,21 @@
             </div>`;
                 document.getElementById('btn-save-edit').addEventListener('click', () => {
                     const val = document.getElementById('edit-area').value.trim();
-                    if (val) document.getElementById('result-narrative').textContent = val;
+                    if (!val) return;
+                    document.getElementById('result-narrative').textContent = val;
+                    postFeedback('fix_narrative', val);
                     document.getElementById('action-slot').innerHTML = `
                 <div style="margin-top:8px;padding:8px 10px;background:var(--success-bg);border-radius:var(--radius-md);font-size:12px;color:var(--success-text);display:flex;align-items:center;gap:6px">
                     <i class="ti ti-check"></i> Đã lưu chỉnh sửa.
                 </div>`;
                 });
             });
-            document.getElementById('btn-reject').addEventListener('click', () => triggerCall(lastConcept, lastInterest));
+
+            document.getElementById('btn-reject').addEventListener('click', () => {
+                postFeedback('regenerate');
+                triggerCall(lastConcept, lastInterest);
+            });
+
             document.getElementById('btn-report').addEventListener('click', () => {
                 document.getElementById('action-slot').innerHTML = `
             <div class="report-section">
@@ -1588,27 +2215,14 @@
                 </div>
             </div>`;
                 document.getElementById('btn-submit-report').addEventListener('click', () => {
+                    const comment = document.getElementById('report-text').value.trim();
+                    if (!comment) { document.getElementById('report-text').focus(); return; }
+                    postFeedback('missing_mapping', comment);
                     document.getElementById('action-slot').innerHTML = `
                 <div style="margin-top:8px;padding:8px 10px;background:var(--warn-bg);border-radius:var(--radius-md);font-size:12px;color:var(--warn-text);display:flex;align-items:center;gap:6px">
                     <i class="ti ti-check"></i> Đã ghi nhận. Cảm ơn bạn!
                 </div>`;
                 });
-            });
-            document.getElementById('followup-chips').addEventListener('click', e => {
-                const chip = e.target.closest('.chip');
-                if (!chip) return;
-                const q = chip.dataset.q;
-                document.getElementById('followup-result').innerHTML = `
-            <div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border-radius:var(--radius-md);font-size:12px;color:var(--info-text);display:flex;align-items:center;gap:6px">
-                <div class="spinner" style="width:11px;height:11px;border-width:1.5px"></div>
-                <span>Đang xử lý: "${q}"...</span>
-            </div>`;
-                setTimeout(() => {
-                    document.getElementById('followup-result').innerHTML = `
-                <div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border-radius:var(--radius-md);font-size:12px;color:var(--info-text)">
-                    <strong>Gợi ý:</strong> Hãy thử nhập một từ mới trong bài để Thư ký Kim giải thích thêm về "${q}".
-                </div>`;
-                }, 1200);
             });
         }
 
@@ -1618,19 +2232,18 @@
         async function triggerCall(concept, interest) {
             lastConcept = concept;
             lastInterest = interest;
+            saveInterest(interest);   // lưu sở thích vào localStorage
             startLoading();
             btnSend.disabled = true;
 
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-            const payload = { concept, interest };
-
             try {
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({ concept, interest }),
                     signal: controller.signal,
                 });
                 clearTimeout(timer);
@@ -1643,11 +2256,7 @@
                 if (!data.needs_clarification) {
                     const now = new Date();
                     const timeStr = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                    addToHistory({
-                        concept, interest,
-                        time: timeStr,
-                        result: data,
-                    });
+                    addToHistory({ concept, interest, time: timeStr, result: data });
                 }
 
                 renderResult(data, concept, interest);
@@ -1668,7 +2277,8 @@
         // ════════════════════════════════════════════════════════════
         btnSend.addEventListener('click', () => {
             if (!validateInputs()) return;
-            triggerCall(selectedConcept, interestInput.value.trim());
+            // interest-input = sở thích, concept-input = khái niệm
+            triggerCall(conceptInput.value.trim(), interestInput.value.trim());
         });
     </script>
 </body>
