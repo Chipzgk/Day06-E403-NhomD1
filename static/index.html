@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI.20K - Cohort 2 | Day 06</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    
+    <!-- THÊM THƯ VIỆN PDF.JS ĐỂ HỖ TRỢ BÔI ĐEN TEXT CHUẨN XÁC -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --sidebar-bg: #1e3a5f;
+            --accent: #4a9eff;
+            --accent-dark: #2d5282;
+            --bg: #ffffff;
+            --bg-secondary: #f7f8fa;
+            --text: #1a202c;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, .1);
+            --border-secondary: rgba(0, 0, 0, .2);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --info-bg: #dbeeff;
+            --info-text: #1e3a5f;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --warn-bg: #fff3cd;
+            --warn-text: #92400e;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #e8edf4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px
+        }
+
+        .app {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            height: 680px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .18);
+            background: var(--bg)
+        }
+
+        .sidebar {
+            width: 248px;
+            min-width: 248px;
+            background: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
+        }
+
+        .sidebar-header {
+            padding: 14px 16px;
+            border-bottom: .5px solid rgba(255, 255, 255, .12)
+        }
+
+        .back-link {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .55);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            margin-bottom: 10px
+        }
+
+        .course-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, .18);
+            border-radius: 2px;
+            margin: 8px 0 4px
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 12%;
+            background: var(--accent);
+            border-radius: 2px
+        }
+
+        .progress-pct {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .45)
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: .5px solid rgba(255, 255, 255, .12)
+        }
+
+        .tab {
+            flex: 1;
+            padding: 9px 4px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, .45);
+            cursor: pointer
+        }
+
+        .tab.active {
+            color: #fff;
+            border-bottom: 2px solid var(--accent)
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+            scrollbar-width: thin
+        }
+
+        .nav-item {
+            padding: 8px 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, .55);
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+            border-left: 3px solid transparent
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .06)
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: rgba(255, 255, 255, .1);
+            border-left-color: var(--accent)
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg)
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-bottom: .5px solid var(--border)
+        }
+
+        .nav-btn {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: var(--radius-md)
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text)
+        }
+
+        .page-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .page-input {
+            width: 32px;
+            text-align: center;
+            border: .5px solid var(--border-secondary);
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-size: 12px;
+            color: var(--text);
+            background: var(--bg)
+        }
+
+        .zoom-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 18px;
+            line-height: 1;
+            padding: 0 2px
+        }
+
+        .timeline {
+            padding: 12px 20px;
+            border-bottom: .5px solid var(--border)
+        }
+
+        .you-label {
+            font-size: 10px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 4px
+        }
+
+        .timeline-track {
+            display: flex;
+            align-items: center
+        }
+
+        .tl-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border)
+        }
+
+        .tl-line.done {
+            background: var(--accent)
+        }
+
+        .tl-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--border-secondary);
+            background: var(--bg);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px
+        }
+
+        .tl-dot.done {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff
+        }
+
+        .tl-dot.current {
+            border-color: var(--accent)
+        }
+
+        .tl-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px
+        }
+
+        .tl-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            flex: 1;
+            line-height: 1.3
+        }
+
+        .tl-label strong {
+            display: block;
+            color: var(--text);
+            font-weight: 600
+        }
+
+        /* VÙNG CHỨA PDF BẰNG PDF.JS */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+            background-color: #525659;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .pdf-page-container {
+            position: relative;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .pdf-canvas {
+            display: block;
+        }
+
+        /* ── CSS Dành riêng cho textLayer của PDF.js để highlight ── */
+        .textLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 0.2;
+            line-height: 1.0;
+        }
+
+        .textLayer span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+        }
+
+        ::selection {
+            background: rgba(0, 114, 255, 0.4);
+        }
+
+        /* Các CSS còn lại giữ nguyên */
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px
+        }
+
+        .mapping-table th {
+            text-align: left;
+            padding: 7px 10px;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px
+        }
+
+        .mapping-table td {
+            padding: 7px 10px;
+            border-top: .5px solid var(--border);
+            color: var(--text)
+        }
+
+        .mapping-table td:last-child {
+            color: var(--accent-dark);
+            font-weight: 500
+        }
+
+        .conf-bar-wrap {
+            margin-bottom: 12px
+        }
+
+        .conf-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px
+        }
+
+        .conf-bar-track {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden
+        }
+
+        .conf-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width .5s ease
+        }
+
+        .conf-bar-fill.high {
+            background: #16a34a
+        }
+
+        .conf-bar-fill.low {
+            background: #dc2626
+        }
+
+        .showing-work {
+            margin-bottom: 12px
+        }
+
+        .work-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .work-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 5px 8px;
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary)
+        }
+
+        .work-step.active {
+            color: var(--accent-dark);
+            background: var(--info-bg);
+            font-weight: 600
+        }
+
+        .work-step.done {
+            color: var(--success-text);
+            background: var(--success-bg)
+        }
+
+        .work-step .step-icon {
+            font-size: 13px;
+            flex-shrink: 0
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: .5px solid var(--border)
+        }
+
+        .btn-action {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            border: .5px solid var(--border-secondary);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background .15s
+        }
+
+        .btn-action:hover {
+            background: var(--bg-secondary)
+        }
+
+        .btn-action.accept {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border-color: rgba(22, 163, 74, .3)
+        }
+
+        .btn-action.reject {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            border-color: rgba(185, 28, 28, .3)
+        }
+
+        .btn-action.report {
+            background: var(--warn-bg);
+            color: var(--warn-text);
+            border-color: rgba(146, 64, 14, .3)
+        }
+
+        .edit-area {
+            width: 100%;
+            border: .5px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            padding: 8px 10px;
+            font-size: 12px;
+            color: var(--text);
+            background: var(--bg);
+            resize: vertical;
+            min-height: 80px;
+            margin-top: 8px;
+            font-family: inherit
+        }
+
+        .edit-area:focus {
+            outline: none;
+            border-color: var(--accent)
+        }
+
+        .report-section {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--warn-bg);
+            border-radius: var(--radius-md);
+            border: .5px solid rgba(146, 64, 14, .2)
+        }
+
+        .report-section textarea {
+            width: 100%;
+            border: .5px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            padding: 7px 9px;
+            font-size: 12px;
+            color: var(--text);
+            background: var(--bg);
+            resize: vertical;
+            min-height: 54px;
+            font-family: inherit;
+            margin-top: 6px
+        }
+
+        .followup-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: .5px solid var(--border)
+        }
+
+        .followup-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px
+        }
+
+        .followup-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        .chip {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 99px;
+            border: .5px solid var(--border-secondary);
+            background: var(--bg);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all .15s
+        }
+
+        .chip:hover {
+            background: var(--info-bg);
+            color: var(--info-text);
+            border-color: rgba(74, 158, 255, .4)
+        }
+
+        .plan-section {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: .5px solid var(--border)
+        }
+
+        .plan-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .plan-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .plan-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px
+        }
+
+        .plan-num {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 3px
+        }
+
+        .plan-input {
+            flex: 1;
+            border: .5px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 7px;
+            font-size: 11px;
+            color: var(--text);
+            background: var(--bg);
+            font-family: inherit
+        }
+
+        .plan-input:focus {
+            outline: none;
+            border-color: var(--accent)
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            display: inline-block;
+            flex-shrink: 0
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            20% {
+                transform: translateX(-6px)
+            }
+
+            40% {
+                transform: translateX(6px)
+            }
+
+            60% {
+                transform: translateX(-4px)
+            }
+
+            80% {
+                transform: translateX(4px)
+            }
+        }
+
+        .shake {
+            animation: shake .35s ease;
+            border-color: #dc2626 !important
+        }
+
+        .btn-retry {
+            margin-top: 10px;
+            background: none;
+            border: .5px solid currentColor;
+            border-radius: var(--radius-md);
+            padding: 6px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            opacity: .85;
+            transition: opacity .15s
+        }
+
+        .btn-retry:hover {
+            opacity: 1
+        }
+
+        .timeout-bar {
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden
+        }
+
+        .timeout-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width linear
+        }
+
+        .ask-bar {
+            padding: 10px 20px;
+            border-top: .5px solid var(--border);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .ask-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            flex: 1
+        }
+
+        .ask-hint span {
+            background: var(--warn-bg);
+            color: var(--warn-text);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-weight: 600
+        }
+
+        .ask-btn {
+            background: var(--sidebar-bg);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 9px 18px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: background .15s
+        }
+
+        .ask-btn:hover {
+            background: var(--accent-dark)
+        }
+
+        .ask-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 200;
+            align-items: center;
+            justify-content: center
+        }
+
+        .overlay.show {
+            display: flex
+        }
+
+        .popup {
+            background: var(--bg);
+            border-radius: var(--radius-lg);
+            border: .5px solid var(--border);
+            padding: 28px;
+            width: 520px;
+            max-width: 92vw;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .2);
+            max-height: 90vh;
+            overflow-y: auto
+        }
+
+        .popup-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text)
+        }
+
+        .popup label {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 6px
+        }
+
+        .popup input[type=text] {
+            width: 100%;
+            border: .5px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: var(--text);
+            background: var(--bg);
+            outline: none;
+            transition: border-color .15s
+        }
+
+        .popup input[type=text]:focus {
+            border-color: var(--accent)
+        }
+
+        .input-hint {
+            font-size: 11px;
+            color: #dc2626;
+            min-height: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px
+        }
+
+        .popup-btns {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end
+        }
+
+        .btn-cancel {
+            background: none;
+            border: .5px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            padding: 9px 18px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-muted)
+        }
+
+        .btn-cancel:hover {
+            background: var(--bg-secondary)
+        }
+
+        .btn-send {
+            background: var(--sidebar-bg);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 9px 20px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background .15s
+        }
+
+        .btn-send:hover {
+            background: var(--accent-dark)
+        }
+
+        .btn-send:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
+        .error-msg {
+            font-size: 13px;
+            color: var(--danger-text);
+            background: var(--danger-bg);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px
+        }
+
+        .result-narrative {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text);
+            margin-bottom: 12px
+        }
+
+        /* ── History panel ── */
+        .history-toggle {
+            font-size: 11px;
+            color: var(--accent);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 8px;
+            font-weight: 600
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+            max-height: 160px;
+            overflow-y: auto
+        }
+
+        .history-item {
+            padding: 7px 10px;
+            border-radius: var(--radius-md);
+            border: .5px solid var(--border);
+            background: var(--bg);
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            transition: background .15s
+        }
+
+        .history-item:hover {
+            background: var(--info-bg)
+        }
+
+        .history-item-meta {
+            color: var(--text-muted);
+            font-size: 10px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .history-item-text {
+            flex: 1;
+            line-height: 1.4;
+            color: var(--text)
+        }
+
+        .history-item-concept {
+            font-weight: 600;
+            color: var(--accent-dark)
+        }
+
+        .history-empty {
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 8px;
+            text-align: center;
+            font-style: italic
+        }
+
+        .history-clear-all {
+            font-size: 11px;
+            color: var(--danger-text);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: auto
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="back-link"><i class="ti ti-arrow-left"></i> Back to course page</div>
+                <div class="course-title">AI.20K - Cohort 2</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-pct">12%</div>
+            </div>
+            <div class="sidebar-tabs">
+                <div class="tab active">Path</div>
+                <div class="tab">Learners</div>
+                <div class="tab">Discuss</div>
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-item" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>01_Attendance.pdf</div>
+                <div class="nav-item" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>Day_1_AI_LLM_Foundation.pdf
+                </div>
+                <div class="nav-item" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>Day_2_Xac_dinh_Bai_toan.pdf
+                </div>
+                <div class="nav-item" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>Day_3_Design_Pattern_ReAct.pdf
+                </div>
+                <div class="nav-item" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>Day_4_Prompt_Engineering.pdf
+                </div>
+                <div class="nav-item" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>Day_5_AI_Product_Thinking.pdf
+                </div>
+                <div class="nav-item active" data-pdf="/public/1-AICB_Ngay_1.pdf"><i class="ti ti-file-type-pdf"
+                        style="color:#e74c3c;font-size:16px;margin-top:1px;flex-shrink:0"></i>Day_6_AI_Product_Hackathon.pdf
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+
+            <!-- VÙNG CHỨA PDF ĐÃ ĐƯỢC CHUYỂN SANG DÙNG PDF.JS -->
+            <div class="content" id="pdf-container">
+                <div style="color:white; margin-top: 20px;">Đang tải PDF...</div>
+            </div>
+
+            <div class="ask-bar">
+                <div class="ask-hint" id="ask-hint">Bôi đen một từ trong nội dung, rồi bấm <span>Thư ký Kim</span></div>
+                <button class="ask-btn" id="ask-btn">
+                    <i class="ti ti-message-question"></i> Thư ký Kim
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <div id="popup-input-view">
+                <div class="popup-title">Thư ký Kim</div>
+
+                <div id="history-section">
+                    <div class="history-toggle" id="history-toggle" onclick="toggleHistory()">
+                        <i class="ti ti-history" style="font-size:12px"></i>
+                        <span id="history-toggle-label">Lịch sử đã hỏi</span>
+                        <i class="ti ti-chevron-down" id="history-chevron" style="font-size:11px;margin-left:2px"></i>
+                        <button class="history-clear-all" id="history-clear-all"
+                            onclick="event.stopPropagation();clearAllHistory()" style="display:none">Xoá tất cả</button>
+                    </div>
+                    <div id="history-list-wrap" style="display:none">
+                        <div class="history-list" id="history-list"></div>
+                    </div>
+                </div>
+
+                <div class="plan-section">
+                    <div class="plan-section-title"><i class="ti ti-list-check" style="font-size:13px"></i> Kế hoạch (có
+                        thể chỉnh)</div>
+                    <div class="plan-steps">
+                        <div class="plan-step"><span class="plan-num">1</span><input class="plan-input"
+                                value="Kiểm tra khái niệm trong domain AI"></div>
+                        <div class="plan-step"><span class="plan-num">2</span><input class="plan-input"
+                                value="Đánh giá độ cụ thể của sở thích"></div>
+                        <div class="plan-step"><span class="plan-num">3</span><input class="plan-input"
+                                value="Map thành phần kỹ thuật sang ngữ cảnh quen thuộc"></div>
+                        <div class="plan-step"><span class="plan-num">4</span><input class="plan-input"
+                                value="Viết analogy narrative"></div>
+                        <div class="plan-step"><span class="plan-num">5</span><input class="plan-input"
+                                value="Tạo bảng mapping để bạn kiểm tra"></div>
+                    </div>
+                </div>
+
+                <label>Khái niệm bạn muốn hỏi là gì?</label>
+                <input type="text" id="concept-input" placeholder="Ví dụ: RAG, Agent, LLM...">
+                <div class="input-hint" id="concept-hint"></div>
+
+                <label>Sở thích của bạn là gì?</label>
+                <input type="text" id="interest-input" placeholder="Ví dụ: bóng đá, nấu ăn, âm nhạc cụ thể...">
+                <div class="input-hint" id="input-hint"></div>
+
+                <div class="popup-btns">
+                    <button class="btn-cancel" id="btn-cancel">Huỷ</button>
+                    <button class="btn-send" id="btn-send">Gửi <i class="ti ti-send"></i></button>
+                </div>
+            </div>
+
+            <div id="popup-result-view" style="display:none">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <div class="spinner" id="popup-spinner"></div>
+                        <span id="popup-result-label" style="font-size:13px;font-weight:600;color:var(--text-muted)">Vui
+                            lòng đợi thư ký Kim...</span>
+                    </div>
+                    <button class="btn-cancel" id="popup-close" style="padding:4px 10px;font-size:12px">✕</button>
+                </div>
+                <div class="timeout-bar" style="margin-bottom:10px">
+                    <div class="timeout-fill" id="popup-timeout-fill"></div>
+                </div>
+                <div class="showing-work" id="showing-work" style="display:none">
+                    <div class="work-steps" id="work-steps">
+                        <div class="work-step" data-step="1"><i class="ti ti-circle step-icon"></i><span>Kiểm tra khái
+                                niệm trong domain AI</span></div>
+                        <div class="work-step" data-step="2"><i class="ti ti-circle step-icon"></i><span>Đánh giá độ cụ
+                                thể của sở thích</span></div>
+                        <div class="work-step" data-step="3"><i class="ti ti-circle step-icon"></i><span>Map thành phần
+                                kỹ thuật</span></div>
+                        <div class="work-step" data-step="4"><i class="ti ti-circle step-icon"></i><span>Viết analogy
+                                narrative</span></div>
+                        <div class="work-step" data-step="5"><i class="ti ti-circle step-icon"></i><span>Tạo bảng
+                                mapping</span></div>
+                    </div>
+                </div>
+                <div id="popup-result-content" style="max-height:380px;overflow-y:auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ════════════════════════════════════════════════════════════
+        // MỚI: XỬ LÝ PDF VỚI PDF.JS
+        // ════════════════════════════════════════════════════════════
+        
+        // Trỏ tới Worker của PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let currentPdf = null;
+        const pdfContainer = document.getElementById('pdf-container');
+
+        async function renderPage(pageNum, pdfDoc, container) {
+            const page = await pdfDoc.getPage(pageNum);
+            const scale = 1.3; // Độ zoom (có thể chỉnh to nhỏ tùy ý)
+            const viewport = page.getViewport({ scale: scale });
+
+            // Div bọc trang
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'pdf-page-container';
+            pageDiv.style.width = `${viewport.width}px`;
+            pageDiv.style.height = `${viewport.height}px`;
+
+            // Canvas để vẽ PDF
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-canvas';
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            pageDiv.appendChild(canvas);
+
+            // Layer chứa text HTML (trong suốt đè lên trên để bôi đen)
+            const textLayerDiv = document.createElement('div');
+            textLayerDiv.className = 'textLayer';
+            textLayerDiv.style.width = `${viewport.width}px`;
+            textLayerDiv.style.height = `${viewport.height}px`;
+            pageDiv.appendChild(textLayerDiv);
+
+            container.appendChild(pageDiv);
+
+            // Render PDF -> Canvas
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            await page.render(renderContext).promise;
+
+            // Lấy data text -> Render HTML TextLayer
+            const textContent = await page.getTextContent();
+            pdfjsLib.renderTextLayer({
+                textContentSource: textContent,
+                container: textLayerDiv,
+                viewport: viewport,
+                textDivs: []
+            });
+        }
+
+        async function loadPDF(url) {
+            pdfContainer.innerHTML = '<div style="color:white; margin-top:20px;">Đang tải PDF...</div>';
+            try {
+                const loadingTask = pdfjsLib.getDocument(url);
+                currentPdf = await loadingTask.promise;
+                pdfContainer.innerHTML = ''; // Xóa loading
+
+                // Render tất cả các trang
+                for (let pageNum = 1; pageNum <= currentPdf.numPages; pageNum++) {
+                    await renderPage(pageNum, currentPdf, pdfContainer);
+                }
+            } catch (error) {
+                pdfContainer.innerHTML = `<div style="color:#ff6b6b; margin-top:20px;">Lỗi tải PDF: ${error.message}</div>`;
+            }
+        }
+
+        // Khởi chạy load PDF lần đầu tiên cho item active
+        const initItem = document.querySelector('.nav-item.active');
+        if (initItem) loadPDF(initItem.getAttribute('data-pdf'));
+
+        // ════════════════════════════════════════════════════════════
+        // XỬ LÝ CHUYỂN BÀI HỌC BÊN SIDEBAR 
+        // ════════════════════════════════════════════════════════════
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                const pdfPath = item.getAttribute('data-pdf');
+                if (pdfPath) {
+                    loadPDF(pdfPath);
+                }
+            });
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // BẮT SỰ KIỆN BÔI ĐEN CHỮ (Bao gồm cả trong Text Layer của PDF)
+        // ════════════════════════════════════════════════════════════
+        document.addEventListener('mouseup', () => {
+            const sel = window.getSelection();
+            const text = sel ? sel.toString().trim() : '';
+            const askHint = document.getElementById('ask-hint');
+
+            // Chỉ bắt những đoạn bôi đen độ dài hợp lý
+            if (text.length > 1 && text.length < 80) {
+                selectedConcept = text;
+                document.getElementById('concept-input').value = text;
+                document.getElementById('concept-hint').textContent = '';
+                document.getElementById('concept-input').style.borderColor = '';
+                
+                askHint.innerHTML = `Khái niệm đã chọn: <span>${escHtml(text)}</span> — Bấm Thư ký Kim`;
+            } 
+            // Nếu click ra chỗ khác không bôi chữ, có thể reset lại giao diện (tuỳ chọn)
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // CONFIG & CÁC BIẾN CŨ CỦA APP
+        // ════════════════════════════════════════════════════════════
+        const TIMEOUT_MS = 25_000;
+        const API_URL = '/api/analogy';
+        const LS_KEY = 'thu_ky_kim_history';
+        const MAX_HISTORY = 50;
+
+        let selectedConcept = '';
+        let lastConcept = '';
+        let lastInterest = '';
+        let workTimer = null;
+        let historyOpen = false;
+
+        const askBtn = document.getElementById('ask-btn');
+        const overlay = document.getElementById('overlay');
+        const conceptInput = document.getElementById('concept-input');
+        const interestInput = document.getElementById('interest-input');
+        const conceptHint = document.getElementById('concept-hint');
+        const inputHint = document.getElementById('input-hint');
+        const btnCancel = document.getElementById('btn-cancel');
+        const btnSend = document.getElementById('btn-send');
+        const popupClose = document.getElementById('popup-close');
+        const inputView = document.getElementById('popup-input-view');
+        const resultView = document.getElementById('popup-result-view');
+        const popupSpinner = document.getElementById('popup-spinner');
+        const popupLabel = document.getElementById('popup-result-label');
+        const popupContent = document.getElementById('popup-result-content');
+        const showingWork = document.getElementById('showing-work');
+
+        // ════════════════════════════════════════════════════════════
+        // VIEWS
+        // ════════════════════════════════════════════════════════════
+        function showInputView() { inputView.style.display = ''; resultView.style.display = 'none'; }
+        function showResultView() { inputView.style.display = 'none'; resultView.style.display = ''; }
+        function closeOverlay() { overlay.classList.remove('show'); showInputView(); stopWork(); }
+
+        // ════════════════════════════════════════════════════════════
+        // HISTORY  (localStorage)
+        // ════════════════════════════════════════════════════════════
+        function loadHistory() {
+            try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+            catch { return []; }
+        }
+        function saveHistory(arr) {
+            try { localStorage.setItem(LS_KEY, JSON.stringify(arr.slice(0, MAX_HISTORY))); } catch { }
+        }
+        function addToHistory(entry) {
+            const arr = loadHistory();
+            arr.unshift(entry);
+            saveHistory(arr);
+            renderHistory();
+        }
+        function clearAllHistory() {
+            if (!confirm('Xoá toàn bộ lịch sử?')) return;
+            localStorage.removeItem(LS_KEY);
+            renderHistory();
+        }
+
+        function toggleHistory() {
+            historyOpen = !historyOpen;
+            document.getElementById('history-list-wrap').style.display = historyOpen ? '' : 'none';
+            document.getElementById('history-chevron').className = historyOpen
+                ? 'ti ti-chevron-up' : 'ti ti-chevron-down';
+            if (historyOpen) renderHistory();
+        }
+
+        function renderHistory() {
+            const arr = loadHistory();
+            const list = document.getElementById('history-list');
+            const clearBtn = document.getElementById('history-clear-all');
+            const label = document.getElementById('history-toggle-label');
+            label.textContent = `Lịch sử đã hỏi (${arr.length})`;
+            clearBtn.style.display = arr.length ? '' : 'none';
+            if (!arr.length) {
+                list.innerHTML = '<div class="history-empty">Chưa có lịch sử nào.</div>';
+                return;
+            }
+            list.innerHTML = arr.map((h, i) => `
+        <div class="history-item" onclick="loadHistoryItem(${i})">
+            <div class="history-item-meta">${h.time}</div>
+            <div class="history-item-text">
+                <span class="history-item-concept">${escHtml(h.concept)}</span>
+                <span style="color:var(--text-muted)"> × ${escHtml(h.interest)}</span>
+            </div>
+        </div>`).join('');
+        }
+
+        function loadHistoryItem(idx) {
+            const arr = loadHistory();
+            const h = arr[idx];
+            if (!h || !h.result) return;
+            lastConcept = h.concept;
+            lastInterest = h.interest;
+            showResultView();
+            popupSpinner.style.display = 'none';
+            popupLabel.textContent = `📖 Lịch sử: "${h.concept}" × ${h.interest}`;
+            renderResult(h.result, h.concept, h.interest, { fromHistory: true });
+        }
+
+        function escHtml(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // SHOWING WORK
+        // ════════════════════════════════════════════════════════════
+        function startWork() {
+            showingWork.style.display = '';
+            let step = 0;
+            const steps = document.querySelectorAll('#work-steps .work-step');
+            steps.forEach(s => { s.classList.remove('active', 'done'); s.querySelector('.step-icon').className = 'ti ti-circle step-icon'; });
+            function tick() {
+                if (step > 0) {
+                    steps[step - 1].classList.remove('active');
+                    steps[step - 1].classList.add('done');
+                    steps[step - 1].querySelector('.step-icon').className = 'ti ti-circle-check step-icon';
+                }
+                if (step < steps.length) {
+                    steps[step].classList.add('active');
+                    steps[step].querySelector('.step-icon').className = 'ti ti-loader step-icon';
+                    step++;
+                    workTimer = setTimeout(tick, 900);
+                }
+            }
+            tick();
+        }
+        function stopWork() { clearTimeout(workTimer); showingWork.style.display = 'none'; }
+        function finishWork() {
+            clearTimeout(workTimer);
+            document.querySelectorAll('#work-steps .work-step').forEach(s => {
+                s.classList.remove('active'); s.classList.add('done');
+                s.querySelector('.step-icon').className = 'ti ti-circle-check step-icon';
+            });
+            setTimeout(() => { showingWork.style.display = 'none'; }, 600);
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // MỞ POPUP & XỬ LÝ KHÁI NIỆM
+        // ════════════════════════════════════════════════════════════
+        askBtn.addEventListener('click', () => {
+            // Không xóa ô concept nếu user vừa mới bôi đen
+            if (!selectedConcept) {
+                conceptInput.value = '';
+                conceptHint.textContent = '';
+                conceptInput.style.borderColor = '';
+            }
+            
+            interestInput.value = '';
+            inputHint.textContent = '';
+            interestInput.style.borderColor = '';
+
+            showInputView();
+            renderHistory();
+            overlay.classList.add('show');
+            setTimeout(() => conceptInput.focus(), 60);
+        });
+
+        btnCancel.addEventListener('click', closeOverlay);
+        popupClose.addEventListener('click', closeOverlay);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+
+        [conceptInput, interestInput].forEach(input => {
+            input.addEventListener('keydown', e => { if (e.key === 'Enter') btnSend.click(); });
+            input.addEventListener('input', () => {
+                input.nextElementSibling.textContent = '';
+                input.style.borderColor = '';
+            });
+        });
+
+        function validateInputs() {
+            let isValid = true;
+            const cVal = conceptInput.value.trim();
+            if (cVal.length < 2) {
+                conceptHint.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px"></i> Vui lòng nhập khái niệm (ít nhất 2 ký tự).';
+                conceptInput.classList.remove('shake'); void conceptInput.offsetWidth; conceptInput.classList.add('shake');
+                isValid = false;
+            }
+
+            const iVal = interestInput.value.trim();
+            if (iVal.length < 2) {
+                inputHint.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px"></i> Vui lòng nhập sở thích (ít nhất 2 ký tự).';
+                interestInput.classList.remove('shake'); void interestInput.offsetWidth; interestInput.classList.add('shake');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                if (cVal.length < 2) conceptInput.focus();
+                else interestInput.focus();
+            } else {
+                selectedConcept = cVal;
+            }
+
+            return isValid;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // LOADING
+        // ════════════════════════════════════════════════════════════
+        function startLoading() {
+            showResultView();
+            popupSpinner.style.display = 'inline-block';
+            popupLabel.textContent = 'Vui lòng đợi thư ký Kim thu thập dữ liệu...';
+            popupContent.innerHTML = '';
+            startWork();
+            const fill = document.getElementById('popup-timeout-fill');
+            if (fill) {
+                fill.style.transition = 'none'; fill.style.width = '100%';
+                requestAnimationFrame(() => {
+                    fill.style.transition = `width ${TIMEOUT_MS}ms linear`;
+                    fill.style.width = '0%';
+                });
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // CONF BAR
+        // ════════════════════════════════════════════════════════════
+        function renderConfBar(conf) {
+            const cls = conf >= 60 ? 'high' : 'low';
+            return `<div class="conf-bar-wrap">
+        <div class="conf-bar-label"><span>Confidence</span><span>${conf}%</span></div>
+        <div class="conf-bar-track"><div class="conf-bar-fill ${cls}" style="width:${conf}%"></div></div>
+    </div>`;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // RENDER ERROR
+        // ════════════════════════════════════════════════════════════
+        function renderError({ icon, title, detail, isTimeout }) {
+            popupSpinner.style.display = 'none';
+            stopWork();
+            popupLabel.textContent = title;
+            const color = isTimeout ? 'var(--warn-text)' : 'var(--danger-text)';
+            const bg = isTimeout ? 'var(--warn-bg)' : 'var(--danger-bg)';
+            popupContent.innerHTML = `
+        <div class="error-msg" style="background:${bg};color:${color}">
+            <i class="ti ${icon}" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
+            <div style="flex:1">
+                <div>${detail}</div>
+                <button class="btn-retry" style="color:${color}" id="btn-retry">
+                    <i class="ti ti-refresh"></i> Thử lại
+                </button>
+            </div>
+        </div>`;
+            document.getElementById('btn-retry').addEventListener('click', () => triggerCall(lastConcept, lastInterest));
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // RENDER RESULT
+        // ════════════════════════════════════════════════════════════
+        function renderResult(data, concept, interest, opts = {}) {
+            if (!opts.fromHistory) {
+                popupSpinner.style.display = 'none';
+                finishWork();
+            }
+            const conf = Math.round((data.confidence || 0) * 100);
+
+            if (data.needs_clarification) {
+                popupLabel.textContent = 'Thư ký Kim cần thêm thông tin';
+                popupContent.innerHTML = `
+            <div class="error-msg" style="background:var(--warn-bg);color:var(--warn-text);margin-bottom:12px">
+                <i class="ti ti-info-circle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
+                <span>${data.clarification_question}</span>
+            </div>
+            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px">Sở thích của bạn là gì?</label>
+            <input id="clarify-input" type="text"
+                style="width:100%;border:.5px solid var(--border-secondary);border-radius:var(--radius-md);padding:10px 14px;font-size:14px;margin-bottom:12px;color:var(--text);background:var(--bg);outline:none"
+                placeholder="Ví dụ: bóng đá, nấu ăn cụ thể hơn...">
+            <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button class="btn-cancel" id="clarify-cancel">Huỷ</button>
+                <button class="btn-send" id="clarify-send">Gửi <i class="ti ti-send"></i></button>
+            </div>`;
+                document.getElementById('clarify-cancel').addEventListener('click', closeOverlay);
+                document.getElementById('clarify-send').addEventListener('click', () => {
+                    const el = document.getElementById('clarify-input');
+                    const v = el.value.trim();
+                    if (v.length < 2) { el.focus(); return; }
+                    triggerCall(lastConcept, v);
+                });
+                document.getElementById('clarify-input').addEventListener('keydown', e => {
+                    if (e.key === 'Enter') document.getElementById('clarify-send').click();
+                });
+                setTimeout(() => document.getElementById('clarify-input').focus(), 60);
+                return;
+            }
+
+            if (data.is_fallback) {
+                popupLabel.textContent = 'Thư ký Kim không tìm được analogy phù hợp';
+                popupContent.innerHTML = `
+            ${renderConfBar(conf)}
+            <div class="error-msg" style="margin-bottom:10px">
+                <i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
+                <span>${data.fallback_reason}</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)">
+                <i class="ti ti-bulb" style="color:var(--accent)"></i> Gợi ý sửa:
+            </div>
+            <ol style="padding-left:18px;font-size:13px;color:var(--text-muted);line-height:1.8">
+                ${(data.suggestions || []).map(s => `<li>${s}</li>`).join('')}
+            </ol>
+            <div style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:.5px solid var(--border)">
+                <button class="btn-action" id="btn-retype-concept" style="flex:1;justify-content:center">
+                    <i class="ti ti-pencil"></i> Nhập lại khái niệm
+                </button>
+                <button class="btn-action reject" id="btn-retype-interest" style="flex:1;justify-content:center">
+                    <i class="ti ti-refresh"></i> Đổi sở thích
+                </button>
+            </div>`;
+                document.getElementById('btn-retype-concept').addEventListener('click', closeOverlay);
+                document.getElementById('btn-retype-interest').addEventListener('click', () => {
+                    conceptInput.value = lastConcept;
+                    interestInput.value = '';
+                    inputHint.textContent = '';
+                    interestInput.style.borderColor = '';
+                    showInputView();
+                    setTimeout(() => interestInput.focus(), 60);
+                });
+                return;
+            }
+
+            popupLabel.textContent = `Thư ký Kim giải thích: "${concept}" qua ${interest}`;
+            const rows = (data.mapping_table || []).map(m =>
+                `<tr><td><strong>${m.technical_component}</strong></td><td style="color:var(--accent-dark);font-weight:500">${m.analogy_element}</td></tr>`
+            ).join('');
+
+            popupContent.innerHTML = `
+        ${renderConfBar(conf)}
+        <p class="result-narrative" id="result-narrative">${data.narrative}</p>
+        <table class="mapping-table">
+            <thead><tr><th>Thành phần kỹ thuật</th><th>Trong "${interest}"</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <div class="result-actions">
+            <button class="btn-action accept" id="btn-accept"><i class="ti ti-circle-check"></i> Accept</button>
+            <button class="btn-action" id="btn-edit"><i class="ti ti-edit"></i> Sửa narrative</button>
+            <button class="btn-action reject" id="btn-reject"><i class="ti ti-refresh"></i> Tạo lại</button>
+            <button class="btn-action report" id="btn-report"><i class="ti ti-flag"></i> Báo thiếu mapping</button>
+        </div>
+        <div id="action-slot"></div>
+        <div class="followup-section">
+            <div class="followup-label"><i class="ti ti-arrow-right" style="font-size:11px"></i> Bước tiếp theo</div>
+            <div class="followup-chips" id="followup-chips">
+                <span class="chip" data-q="Giải thích lại bằng ví dụ khác">Ví dụ khác</span>
+                <span class="chip" data-q="Cho ví dụ ${concept} trong RAG">${concept} trong RAG</span>
+                <span class="chip" data-q="Tạo câu hỏi ôn tập về ${concept}">Câu hỏi ôn tập</span>
+                <span class="chip" data-q="So sánh ${concept} với khái niệm liên quan">So sánh khái niệm</span>
+            </div>
+            <div id="followup-result"></div>
+        </div>`;
+
+            document.getElementById('btn-accept').addEventListener('click', () => {
+                document.getElementById('action-slot').innerHTML = `
+            <div style="margin-top:8px;padding:8px 10px;background:var(--success-bg);border-radius:var(--radius-md);font-size:12px;color:var(--success-text);display:flex;align-items:center;gap:6px">
+                <i class="ti ti-check"></i> Đã chấp nhận. Bạn vẫn có thể sửa nếu cần.
+            </div>`;
+            });
+            document.getElementById('btn-edit').addEventListener('click', () => {
+                const current = document.getElementById('result-narrative').textContent;
+                document.getElementById('action-slot').innerHTML = `
+            <textarea class="edit-area" id="edit-area">${current}</textarea>
+            <div style="display:flex;gap:6px;margin-top:6px;justify-content:flex-end">
+                <button class="btn-action" id="btn-save-edit"><i class="ti ti-device-floppy"></i> Lưu</button>
+            </div>`;
+                document.getElementById('btn-save-edit').addEventListener('click', () => {
+                    const val = document.getElementById('edit-area').value.trim();
+                    if (val) document.getElementById('result-narrative').textContent = val;
+                    document.getElementById('action-slot').innerHTML = `
+                <div style="margin-top:8px;padding:8px 10px;background:var(--success-bg);border-radius:var(--radius-md);font-size:12px;color:var(--success-text);display:flex;align-items:center;gap:6px">
+                    <i class="ti ti-check"></i> Đã lưu chỉnh sửa.
+                </div>`;
+                });
+            });
+            document.getElementById('btn-reject').addEventListener('click', () => triggerCall(lastConcept, lastInterest));
+            document.getElementById('btn-report').addEventListener('click', () => {
+                document.getElementById('action-slot').innerHTML = `
+            <div class="report-section">
+                <div style="font-size:12px;font-weight:600;color:var(--warn-text);margin-bottom:4px"><i class="ti ti-flag"></i> Báo thiếu mapping</div>
+                <textarea id="report-text" placeholder="Thành phần nào bị thiếu?"></textarea>
+                <div style="display:flex;gap:6px;margin-top:6px;justify-content:flex-end">
+                    <button class="btn-action" id="btn-submit-report"><i class="ti ti-send"></i> Gửi</button>
+                </div>
+            </div>`;
+                document.getElementById('btn-submit-report').addEventListener('click', () => {
+                    document.getElementById('action-slot').innerHTML = `
+                <div style="margin-top:8px;padding:8px 10px;background:var(--warn-bg);border-radius:var(--radius-md);font-size:12px;color:var(--warn-text);display:flex;align-items:center;gap:6px">
+                    <i class="ti ti-check"></i> Đã ghi nhận. Cảm ơn bạn!
+                </div>`;
+                });
+            });
+            document.getElementById('followup-chips').addEventListener('click', e => {
+                const chip = e.target.closest('.chip');
+                if (!chip) return;
+                const q = chip.dataset.q;
+                document.getElementById('followup-result').innerHTML = `
+            <div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border-radius:var(--radius-md);font-size:12px;color:var(--info-text);display:flex;align-items:center;gap:6px">
+                <div class="spinner" style="width:11px;height:11px;border-width:1.5px"></div>
+                <span>Đang xử lý: "${q}"...</span>
+            </div>`;
+                setTimeout(() => {
+                    document.getElementById('followup-result').innerHTML = `
+                <div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border-radius:var(--radius-md);font-size:12px;color:var(--info-text)">
+                    <strong>Gợi ý:</strong> Hãy thử nhập một từ mới trong bài để Thư ký Kim giải thích thêm về "${q}".
+                </div>`;
+                }, 1200);
+            });
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // CORE CALL
+        // ════════════════════════════════════════════════════════════
+        async function triggerCall(concept, interest) {
+            lastConcept = concept;
+            lastInterest = interest;
+            startLoading();
+            btnSend.disabled = true;
+
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+            const payload = { concept, interest };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal,
+                });
+                clearTimeout(timer);
+                if (!res.ok) {
+                    renderError({ icon: 'ti-server-off', title: `Lỗi server (${res.status})`, detail: `Server trả về HTTP ${res.status}.`, isTimeout: false });
+                    return;
+                }
+                const data = await res.json();
+
+                if (!data.needs_clarification) {
+                    const now = new Date();
+                    const timeStr = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                    addToHistory({
+                        concept, interest,
+                        time: timeStr,
+                        result: data,
+                    });
+                }
+
+                renderResult(data, concept, interest);
+            } catch (err) {
+                clearTimeout(timer);
+                if (err.name === 'AbortError') {
+                    renderError({ icon: 'ti-clock', title: 'Hết thời gian chờ (25s)', detail: 'Server không phản hồi sau 25 giây.', isTimeout: true });
+                } else {
+                    renderError({ icon: 'ti-wifi-off', title: 'Không thể kết nối', detail: `Không thể kết nối tới backend. <code style="font-size:11px">${err.message}</code>`, isTimeout: false });
+                }
+            } finally {
+                btnSend.disabled = false;
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // SEND BUTTON
+        // ════════════════════════════════════════════════════════════
+        btnSend.addEventListener('click', () => {
+            if (!validateInputs()) return;
+            triggerCall(selectedConcept, interestInput.value.trim());
+        });
+    </script>
+</body>
+
+</html>
