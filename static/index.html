@@ -312,7 +312,7 @@
             flex-direction: column;
             align-items: center;
             gap: 16px;
-            padding: 20px 0;
+            padding: 64px 20px 24px;
             position: relative;
         }
 
@@ -320,6 +320,7 @@
             position: relative;
             background: #fff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            flex: 0 0 auto;
         }
 
         .pdf-canvas {
@@ -371,6 +372,56 @@
 
         ::selection {
             background: rgba(0, 114, 255, 0.4);
+        }
+
+        .pdf-toolbar {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            z-index: 24;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 8px;
+            background: rgba(30, 58, 95, .92);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+            backdrop-filter: blur(10px);
+        }
+
+        .pdf-zoom-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            transition: background .15s, opacity .15s
+        }
+
+        .pdf-zoom-btn:hover {
+            background: rgba(255, 255, 255, .14)
+        }
+
+        .pdf-zoom-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed
+        }
+
+        .pdf-zoom-label {
+            min-width: 48px;
+            text-align: center;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 32px;
         }
 
         .mapping-table {
@@ -1299,6 +1350,17 @@
                 width: 100%
             }
 
+            .content {
+                padding: 58px 12px 18px;
+                gap: 12px
+            }
+
+            .pdf-toolbar {
+                top: 8px;
+                width: calc(100% - 24px);
+                justify-content: center
+            }
+
             .overlay {
                 position: fixed;
                 inset: 0 0 0 auto;
@@ -1390,6 +1452,22 @@
             <div class="pdf-area">
                 <div class="content" id="pdf-container">
                     <div style="color:white; margin-top: 20px;">Đang tải PDF...</div>
+                </div>
+
+                <div class="pdf-toolbar" aria-label="Điều khiển zoom slide">
+                    <button class="pdf-zoom-btn" id="zoom-out-btn" type="button" title="Thu nhỏ slide"
+                        aria-label="Thu nhỏ slide">
+                        <i class="ti ti-minus"></i>
+                    </button>
+                    <button class="pdf-zoom-btn" id="zoom-fit-btn" type="button" title="Vừa khung nhìn"
+                        aria-label="Vừa khung nhìn">
+                        <i class="ti ti-arrows-maximize"></i>
+                    </button>
+                    <div class="pdf-zoom-label" id="zoom-label">Fit</div>
+                    <button class="pdf-zoom-btn" id="zoom-in-btn" type="button" title="Phóng to slide"
+                        aria-label="Phóng to slide">
+                        <i class="ti ti-plus"></i>
+                    </button>
                 </div>
 
                 <button class="ask-btn" id="ask-btn" type="button" aria-label="Mở Thư ký Kim">
@@ -1537,11 +1615,51 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         let currentPdf = null;
+        let fitScale = 1;
+        let zoomLevel = 1;
+        let pdfRenderToken = 0;
+        let pdfResizeTimer = null;
+        const ZOOM_MIN = 0.6;
+        const ZOOM_MAX = 2.2;
+        const ZOOM_STEP = 0.12;
+        const pdfArea = document.querySelector('.pdf-area');
         const pdfContainer = document.getElementById('pdf-container');
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const zoomFitBtn = document.getElementById('zoom-fit-btn');
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomLabel = document.getElementById('zoom-label');
 
-        async function renderPage(pageNum, pdfDoc, container) {
+        function clampZoom(value) {
+            return Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, value));
+        }
+
+        function currentPdfScale() {
+            return Math.max(0.2, fitScale * zoomLevel);
+        }
+
+        function updateZoomUi() {
+            const percent = Math.round(zoomLevel * 100);
+            zoomLabel.textContent = zoomLevel === 1 ? 'Fit' : `${percent}%`;
+            zoomOutBtn.disabled = zoomLevel <= ZOOM_MIN + 0.001;
+            zoomInBtn.disabled = zoomLevel >= ZOOM_MAX - 0.001;
+        }
+
+        async function updateFitScale() {
+            if (!currentPdf || !pdfContainer.clientWidth) {
+                fitScale = 1;
+                return;
+            }
+
+            const firstPage = await currentPdf.getPage(1);
+            const baseViewport = firstPage.getViewport({ scale: 1 });
+            const availableWidth = Math.max(260, pdfContainer.clientWidth - 48);
+            fitScale = Math.max(0.25, Math.min(1.8, availableWidth / baseViewport.width));
+        }
+
+        async function renderPage(pageNum, pdfDoc, container, scale, token) {
+            if (token !== pdfRenderToken) return;
             const page = await pdfDoc.getPage(pageNum);
-            const scale = 1.3;
+            if (token !== pdfRenderToken) return;
             const viewport = page.getViewport({ scale: scale });
 
             const pageDiv = document.createElement('div');
@@ -1552,8 +1670,11 @@
             const canvas = document.createElement('canvas');
             canvas.className = 'pdf-canvas';
             const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+            const outputScale = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.floor(viewport.width * outputScale);
+            canvas.height = Math.floor(viewport.height * outputScale);
+            canvas.style.width = `${viewport.width}px`;
+            canvas.style.height = `${viewport.height}px`;
             pageDiv.appendChild(canvas);
 
             const textLayerDiv = document.createElement('div');
@@ -1565,7 +1686,12 @@
 
             container.appendChild(pageDiv);
 
-            await page.render({ canvasContext: context, viewport: viewport }).promise;
+            await page.render({
+                canvasContext: context,
+                viewport: viewport,
+                transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null,
+            }).promise;
+            if (token !== pdfRenderToken) return;
 
             const textContent = await page.getTextContent({ includeMarkedContent: true });
             const textLayerTask = pdfjsLib.renderTextLayer({
@@ -1577,18 +1703,78 @@
             await textLayerTask.promise;
         }
 
+        async function renderCurrentPDF({ preserveScroll = false } = {}) {
+            if (!currentPdf) return;
+
+            const token = ++pdfRenderToken;
+            const maxScroll = Math.max(1, pdfContainer.scrollHeight - pdfContainer.clientHeight);
+            const scrollRatio = preserveScroll ? pdfContainer.scrollTop / maxScroll : 0;
+            pdfContainer.innerHTML = '<div style="color:white; margin-top:20px;">Đang dựng slide...</div>';
+
+            try {
+                await updateFitScale();
+                const scale = currentPdfScale();
+                updateZoomUi();
+                if (token !== pdfRenderToken) return;
+
+                pdfContainer.innerHTML = '';
+                for (let pageNum = 1; pageNum <= currentPdf.numPages; pageNum++) {
+                    await renderPage(pageNum, currentPdf, pdfContainer, scale, token);
+                    if (token !== pdfRenderToken) return;
+                }
+
+                if (preserveScroll) {
+                    requestAnimationFrame(() => {
+                        const nextMax = Math.max(0, pdfContainer.scrollHeight - pdfContainer.clientHeight);
+                        pdfContainer.scrollTop = nextMax * scrollRatio;
+                    });
+                }
+            } catch (error) {
+                if (token === pdfRenderToken) {
+                    pdfContainer.innerHTML = `<div style="color:#ff6b6b; margin-top:20px;">Lỗi dựng slide: ${error.message}</div>`;
+                }
+            }
+        }
+
         async function loadPDF(url) {
+            zoomLevel = 1;
+            updateZoomUi();
             pdfContainer.innerHTML = '<div style="color:white; margin-top:20px;">Đang tải PDF...</div>';
             try {
                 const loadingTask = pdfjsLib.getDocument(url);
                 currentPdf = await loadingTask.promise;
-                pdfContainer.innerHTML = '';
-                for (let pageNum = 1; pageNum <= currentPdf.numPages; pageNum++) {
-                    await renderPage(pageNum, currentPdf, pdfContainer);
-                }
+                await renderCurrentPDF();
             } catch (error) {
+                currentPdf = null;
                 pdfContainer.innerHTML = `<div style="color:#ff6b6b; margin-top:20px;">Lỗi tải PDF: ${error.message}</div>`;
             }
+        }
+
+        function schedulePdfRefit() {
+            if (!currentPdf) return;
+            clearTimeout(pdfResizeTimer);
+            pdfResizeTimer = setTimeout(() => renderCurrentPDF({ preserveScroll: true }), 260);
+        }
+
+        zoomOutBtn.addEventListener('click', () => {
+            zoomLevel = clampZoom(zoomLevel - ZOOM_STEP);
+            renderCurrentPDF({ preserveScroll: true });
+        });
+
+        zoomFitBtn.addEventListener('click', () => {
+            zoomLevel = 1;
+            renderCurrentPDF({ preserveScroll: true });
+        });
+
+        zoomInBtn.addEventListener('click', () => {
+            zoomLevel = clampZoom(zoomLevel + ZOOM_STEP);
+            renderCurrentPDF({ preserveScroll: true });
+        });
+
+        window.addEventListener('resize', schedulePdfRefit);
+        if ('ResizeObserver' in window) {
+            const pdfResizeObserver = new ResizeObserver(schedulePdfRefit);
+            pdfResizeObserver.observe(pdfArea);
         }
 
         const initItem = document.querySelector('.nav-item.active');
