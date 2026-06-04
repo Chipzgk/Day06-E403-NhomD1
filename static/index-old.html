@@ -1,1715 +1,1752 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI.20K - Cohort 2 | Day 06</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-    <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --sidebar-bg: #1e3a5f;
-            --accent: #4a9eff;
-            --accent-dark: #2d5282;
-            --bg: #ffffff;
-            --bg-secondary: #f7f8fa;
-            --text: #1a202c;
-            --text-muted: #64748b;
-            --border: rgba(0, 0, 0, 0.1);
-            --border-secondary: rgba(0, 0, 0, 0.2);
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
-            --info-bg: #dbeeff;
-            --info-text: #1e3a5f;
-            --danger-bg: #fee2e2;
-            --danger-text: #991b1b;
-            --warn-bg: #fff3cd;
-            --warn-text: #92400e;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #e8edf4;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .app {
-            display: flex;
-            width: 100%;
-            max-width: 1100px;
-            height: 680px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
-            background: var(--bg);
-        }
-
-        /* ── Sidebar ── */
-        .sidebar {
-            width: 248px;
-            min-width: 248px;
-            background: var(--sidebar-bg);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .sidebar-header {
-            padding: 14px 16px;
-            border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .back-link {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.55);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        .course-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 2px;
-            margin: 8px 0 4px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 12%;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-
-        .progress-pct {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.45);
-        }
-
-        .sidebar-tabs {
-            display: flex;
-            border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 9px 4px;
-            text-align: center;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.45);
-            cursor: pointer;
-        }
-
-        .tab.active {
-            color: #fff;
-            border-bottom: 2px solid var(--accent);
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px 0;
-            scrollbar-width: thin;
-        }
-
-        .nav-item {
-            padding: 8px 16px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.55);
-            cursor: pointer;
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            line-height: 1.4;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .nav-item.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-            border-left-color: var(--accent);
-        }
-
-        .nav-sub {
-            padding: 5px 16px 5px 30px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.45);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-sub:hover {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .nav-sub.active {
-            color: var(--accent);
-        }
-
-        /* ── Main ── */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: var(--bg);
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            border-bottom: 0.5px solid var(--border);
-        }
-
-        .nav-btn {
-            font-size: 12px;
-            color: var(--text-muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            border-radius: var(--radius-md);
-        }
-
-        .nav-btn:hover {
-            background: var(--bg-secondary);
-            color: var(--text);
-        }
-
-        .page-info {
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .page-input {
-            width: 32px;
-            text-align: center;
-            border: 0.5px solid var(--border-secondary);
-            border-radius: 4px;
-            padding: 2px 4px;
-            font-size: 12px;
-            color: var(--text);
-            background: var(--bg);
-        }
-
-        .zoom-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 18px;
-            line-height: 1;
-            padding: 0 2px;
-        }
-
-        /* ── Timeline ── */
-        .timeline {
-            padding: 12px 20px;
-            border-bottom: 0.5px solid var(--border);
-        }
-
-        .you-label {
-            font-size: 10px;
-            color: var(--accent);
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .timeline-track {
-            display: flex;
-            align-items: center;
-        }
-
-        .tl-line {
-            flex: 1;
-            height: 2px;
-            background: var(--border);
-        }
-
-        .tl-line.done {
-            background: var(--accent);
-        }
-
-        .tl-dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid var(--border-secondary);
-            background: var(--bg);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-        }
-
-        .tl-dot.done {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        .tl-dot.current {
-            border-color: var(--accent);
-        }
-
-        .tl-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-        }
-
-        .tl-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-align: center;
-            flex: 1;
-            line-height: 1.3;
-        }
-
-        .tl-label strong {
-            display: block;
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        /* ── Content ── */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            scrollbar-width: thin;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text);
-        }
-
-        .info-block {
-            background: var(--info-bg);
-            border-left: 4px solid var(--accent);
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-        }
-
-        .info-block p {
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--info-text);
-        }
-
-        .cards-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .card {
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            background: var(--bg);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .card-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-        }
-
-        .card-icon.green {
-            background: var(--success-bg);
-            color: #16a34a;
-        }
-
-        .card-icon.blue {
-            background: var(--info-bg);
-            color: #1e40af;
-        }
-
-        .card-icon.red {
-            background: var(--danger-bg);
-            color: #dc2626;
-        }
-
-        .card-meta {
-            flex: 1;
-        }
-
-        .card-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .badge {
-            display: inline-block;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 99px;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        .badge.done {
-            background: var(--success-bg);
-            color: var(--success-text);
-        }
-
-        .badge.todo {
-            background: var(--info-bg);
-            color: var(--info-text);
-        }
-
-        .badge.soon {
-            background: var(--danger-bg);
-            color: var(--danger-text);
-        }
-
-        .card ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .card ul li {
-            font-size: 11px;
-            color: var(--text-muted);
-            padding: 3px 0;
-            display: flex;
-            gap: 6px;
-            line-height: 1.4;
-        }
-
-        .card ul li::before {
-            content: "•";
-            color: var(--accent);
-            flex-shrink: 0;
-        }
-
-        .section-title {
-            font-size: 15px;
-            font-weight: 600;
-            margin: 16px 0 8px;
-            color: var(--text);
-        }
-
-        .body-text {
-            font-size: 13px;
-            line-height: 1.7;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .highlight {
-            background: var(--warn-bg);
-            border-radius: 3px;
-            padding: 0 3px;
-            cursor: pointer;
-            color: var(--warn-text);
-            font-weight: 500;
-        }
-
-        .selection-hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            padding: 8px 12px;
-            margin-top: 12px;
-        }
-
-        /* ── Result box ── */
-        .result-box {
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 14px;
-            margin-top: 12px;
-            display: none;
-            background: var(--bg);
-        }
-
-        .result-box.show {
-            display: block;
-        }
-
-        .result-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        .result-narrative {
-            font-size: 13px;
-            line-height: 1.7;
-            color: var(--text);
-            margin-bottom: 12px;
-        }
-
-        .mapping-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-
-        .mapping-table th {
-            text-align: left;
-            padding: 7px 10px;
-            background: var(--bg-secondary);
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 11px;
-        }
-
-        .mapping-table td {
-            padding: 7px 10px;
-            border-top: 0.5px solid var(--border);
-            color: var(--text);
-        }
-
-        .mapping-table td:last-child {
-            color: var(--accent-dark);
-            font-weight: 500;
-        }
-
-        /* ── Confidence badge ── */
-        .conf-badge {
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 99px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        .conf-high {
-            background: var(--success-bg);
-            color: var(--success-text);
-        }
-
-        .conf-low {
-            background: var(--danger-bg);
-            color: var(--danger-text);
-        }
-
-        /* ── Confidence bar ── */
-        .conf-bar-wrap {
-            margin-bottom: 12px;
-        }
-
-        .conf-bar-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .conf-bar-track {
-            height: 6px;
-            background: var(--border);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .conf-bar-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s ease;
-        }
-
-        .conf-bar-fill.high {
-            background: #16a34a;
-        }
-
-        .conf-bar-fill.low {
-            background: #dc2626;
-        }
-
-        /* ── Showing Work steps ── */
-        .showing-work {
-            margin-bottom: 12px;
-        }
-
-        .work-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .work-step {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: var(--text-muted);
-            padding: 5px 8px;
-            border-radius: var(--radius-md);
-            background: var(--bg-secondary);
-        }
-
-        .work-step.active {
-            color: var(--accent-dark);
-            background: var(--info-bg);
-            font-weight: 600;
-        }
-
-        .work-step.done {
-            color: var(--success-text);
-            background: var(--success-bg);
-        }
-
-        .work-step .step-icon {
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        /* ── Action buttons after result ── */
-        .result-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 0.5px solid var(--border);
-        }
-
-        .btn-action {
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            border: 0.5px solid var(--border-secondary);
-            background: var(--bg);
-            color: var(--text);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: background 0.15s;
-        }
-
-        .btn-action:hover {
-            background: var(--bg-secondary);
-        }
-
-        .btn-action.accept {
-            background: var(--success-bg);
-            color: var(--success-text);
-            border-color: rgba(22, 163, 74, 0.3);
-        }
-
-        .btn-action.reject {
-            background: var(--danger-bg);
-            color: var(--danger-text);
-            border-color: rgba(185, 28, 28, 0.3);
-        }
-
-        .btn-action.report {
-            background: var(--warn-bg);
-            color: var(--warn-text);
-            border-color: rgba(146, 64, 14, 0.3);
-        }
-
-        /* ── Edit narrative ── */
-        .edit-area {
-            width: 100%;
-            border: 0.5px solid var(--border-secondary);
-            border-radius: var(--radius-md);
-            padding: 8px 10px;
-            font-size: 12px;
-            color: var(--text);
-            background: var(--bg);
-            resize: vertical;
-            min-height: 80px;
-            margin-top: 8px;
-            font-family: inherit;
-        }
-
-        .edit-area:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        /* ── Report missing mapping ── */
-        .report-section {
-            margin-top: 10px;
-            padding: 10px;
-            background: var(--warn-bg);
-            border-radius: var(--radius-md);
-            border: 0.5px solid rgba(146, 64, 14, 0.2);
-        }
-
-        .report-section textarea {
-            width: 100%;
-            border: 0.5px solid var(--border-secondary);
-            border-radius: var(--radius-md);
-            padding: 7px 9px;
-            font-size: 12px;
-            color: var(--text);
-            background: var(--bg);
-            resize: vertical;
-            min-height: 54px;
-            font-family: inherit;
-            margin-top: 6px;
-        }
-
-        /* ── Follow-up chips ── */
-        .followup-section {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 0.5px solid var(--border);
-        }
-
-        .followup-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .followup-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .chip {
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 99px;
-            border: 0.5px solid var(--border-secondary);
-            background: var(--bg);
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .chip:hover {
-            background: var(--info-bg);
-            color: var(--info-text);
-            border-color: rgba(74, 158, 255, 0.4);
-        }
-
-        /* ── Editable Plan ── */
-        .plan-section {
-            margin-bottom: 12px;
-            padding: 10px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            border: 0.5px solid var(--border);
-        }
-
-        .plan-section-title {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .plan-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .plan-step {
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-        }
-
-        .plan-num {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 3px;
-        }
-
-        .plan-input {
-            flex: 1;
-            border: 0.5px solid var(--border);
-            border-radius: 4px;
-            padding: 4px 7px;
-            font-size: 11px;
-            color: var(--text);
-            background: var(--bg);
-            font-family: inherit;
-        }
-
-        .plan-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        /* ── Spinner ── */
-        .spinner {
-            width: 14px;
-            height: 14px;
-            border: 2px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            20% {
-                transform: translateX(-6px);
-            }
-
-            40% {
-                transform: translateX(6px);
-            }
-
-            60% {
-                transform: translateX(-4px);
-            }
-
-            80% {
-                transform: translateX(4px);
-            }
-        }
-
-        .shake {
-            animation: shake 0.35s ease;
-            border-color: #dc2626 !important;
-        }
-
-        .btn-retry {
-            margin-top: 10px;
-            background: none;
-            border: 0.5px solid currentColor;
-            border-radius: var(--radius-md);
-            padding: 6px 14px;
-            font-size: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            opacity: 0.85;
-            transition: opacity 0.15s;
-        }
-
-        .btn-retry:hover {
-            opacity: 1;
-        }
-
-        .timeout-bar {
-            height: 3px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .timeout-fill {
-            height: 100%;
-            width: 100%;
-            background: var(--accent);
-            border-radius: 2px;
-            transition: width linear;
-        }
-
-        /* ── Ask bar ── */
-        .ask-bar {
-            padding: 10px 20px;
-            border-top: 0.5px solid var(--border);
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .ask-hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            flex: 1;
-        }
-
-        .ask-hint span {
-            background: var(--warn-bg);
-            color: var(--warn-text);
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-weight: 600;
-        }
-
-        .ask-btn {
-            background: var(--sidebar-bg);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 9px 18px;
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 500;
-            transition: background 0.15s;
-        }
-
-        .ask-btn:hover {
-            background: var(--accent-dark);
-        }
-
-        .ask-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* ── Overlay / Popup ── */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .overlay.show {
-            display: flex;
-        }
-
-        .popup {
-            background: var(--bg);
-            border-radius: var(--radius-lg);
-            border: 0.5px solid var(--border);
-            padding: 28px;
-            width: 480px;
-            max-width: 92vw;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .popup-title {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-
-        .popup-concept {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 18px;
-        }
-
-        .popup-concept .concept-chip {
-            background: var(--info-bg);
-            color: var(--info-text);
-            padding: 2px 10px;
-            border-radius: 99px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 4px;
-        }
-
-        .popup label {
-            font-size: 13px;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .popup input {
-            width: 100%;
-            border: 0.5px solid var(--border-secondary);
-            border-radius: var(--radius-md);
-            padding: 10px 14px;
-            font-size: 14px;
-            margin-bottom: 4px;
-            color: var(--text);
-            background: var(--bg);
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        .popup input:focus {
-            border-color: var(--accent);
-        }
-
-        .input-hint {
-            font-size: 11px;
-            color: #dc2626;
-            min-height: 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .popup-btns {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        .btn-cancel {
-            background: none;
-            border: 0.5px solid var(--border-secondary);
-            border-radius: var(--radius-md);
-            padding: 9px 18px;
-            font-size: 13px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .btn-cancel:hover {
-            background: var(--bg-secondary);
-        }
-
-        .btn-send {
-            background: var(--sidebar-bg);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 9px 20px;
-            font-size: 13px;
-            cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.15s;
-        }
-
-        .btn-send:hover {
-            background: var(--accent-dark);
-        }
-
-        .btn-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .error-msg {
-            font-size: 13px;
-            color: var(--danger-text);
-            background: var(--danger-bg);
-            border-radius: var(--radius-md);
-            padding: 10px 14px;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Máy Dịch Khái Niệm - Level 2 Prototype</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f9fafb;
+      --text: #172033;
+      --muted: #667085;
+      --line: #d7deea;
+      --primary: #0f766e;
+      --primary-dark: #0b5f59;
+      --primary-soft: #ddf7f2;
+      --blue: #2563eb;
+      --blue-soft: #e8f0ff;
+      --success: #15803d;
+      --success-soft: #e8f7ee;
+      --warning: #b45309;
+      --warning-soft: #fff4de;
+      --error: #b91c1c;
+      --error-soft: #feecec;
+      --accent: #f59e0b;
+      --shadow: 0 18px 42px rgba(23, 32, 51, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .screen {
+      min-height: 100vh;
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 14px;
+      font-size: clamp(2.1rem, 5vw, 4.3rem);
+      line-height: 1.04;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-size: 1.22rem;
+      line-height: 1.2;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 0.9rem;
+    }
+
+    .intro-screen {
+      display: none;
+      place-items: center;
+      padding: 28px 16px;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(245, 158, 11, 0.08)),
+        var(--bg);
+    }
+
+    .intro-screen.active {
+      display: grid;
+    }
+
+    .intro-shell {
+      width: min(1120px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .intro-card,
+    .info-card,
+    .panel,
+    .output-card,
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .intro-card {
+      min-height: 600px;
+      padding: clamp(22px, 4vw, 40px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .intro-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin-bottom: 26px;
+      color: #344054;
+      font-size: clamp(1.04rem, 2vw, 1.2rem);
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .info-card {
+      padding: 20px;
+      box-shadow: none;
+    }
+
+    .slice-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .slice-list li {
+      display: grid;
+      grid-template-columns: 116px 1fr;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+    }
+
+    .slice-list strong {
+      color: #344054;
+    }
+
+    .badge-row,
+    .button-row,
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge.neutral {
+      color: #475467;
+      background: #edf0f5;
+    }
+
+    .badge.primary {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .badge.info {
+      color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .badge.success {
+      color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .badge.warning {
+      color: var(--warning);
+      background: var(--warning-soft);
+    }
+
+    .badge.error {
+      color: var(--error);
+      background: var(--error-soft);
+    }
+
+    .primary-button,
+    .secondary-button,
+    .ghost-button,
+    .danger-button,
+    .warning-button,
+    .chip-button {
+      min-height: 42px;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-weight: 800;
+      transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .primary-button {
+      color: #ffffff;
+      background: var(--primary);
+      box-shadow: 0 10px 24px rgba(15, 118, 110, 0.22);
+    }
+
+    .primary-button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .secondary-button {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      border: 1px solid rgba(15, 118, 110, 0.25);
+    }
+
+    .ghost-button,
+    .chip-button {
+      color: #344054;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .ghost-button:hover,
+    .chip-button:hover,
+    .chip-button.selected {
+      border-color: rgba(15, 118, 110, 0.35);
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .danger-button {
+      color: var(--error);
+      background: var(--error-soft);
+      border: 1px solid rgba(185, 28, 28, 0.22);
+    }
+
+    .warning-button {
+      color: var(--warning);
+      background: var(--warning-soft);
+      border: 1px solid rgba(180, 83, 9, 0.24);
+    }
+
+    .workspace-screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 70px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-left {
+      font-weight: 900;
+      font-size: 1.05rem;
+    }
+
+    .header-center {
+      justify-self: center;
+      color: var(--blue);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .header-right {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--warning);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .workspace-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(240px, 300px) minmax(280px, 0.95fr) minmax(380px, 1.45fr);
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      padding: 18px;
+      overflow: auto;
+      box-shadow: none;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title h2 {
+      margin: 0;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    label,
+    .field-label {
+      color: #344054;
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    select {
+      min-height: 42px;
+      padding: 9px 10px;
+    }
+
+    textarea {
+      min-height: 76px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    select:focus,
+    textarea:focus,
+    button:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.16);
+      outline-offset: 2px;
+    }
+
+    .prompt-note,
+    .trust-note,
+    .status-card {
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .trust-note {
+      border-color: rgba(180, 83, 9, 0.24);
+      background: var(--warning-soft);
+      color: #854d0e;
+      font-weight: 800;
+    }
+
+    .plan-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .plan-card {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 11px;
+      border: 1px dashed #b7c1d2;
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+    }
+
+    .plan-number {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--blue);
+      font-weight: 900;
+      font-size: 0.86rem;
+    }
+
+    .work-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .work-step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 9px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: #475467;
+      background: var(--surface);
+    }
+
+    .work-step.active {
+      color: var(--blue);
+      border-color: rgba(37, 99, 235, 0.3);
+      background: var(--blue-soft);
+      font-weight: 900;
+    }
+
+    .work-step.done {
+      color: var(--success);
+      border-color: rgba(21, 128, 61, 0.24);
+      background: var(--success-soft);
+    }
+
+    .work-mark {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: #e6eaf2;
+      color: #475467;
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .work-step.active .work-mark {
+      color: #ffffff;
+      background: var(--blue);
+    }
+
+    .work-step.done .work-mark {
+      color: #ffffff;
+      background: var(--success);
+    }
+
+    .loader {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(15, 118, 110, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 999px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .output-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .empty-state {
+      display: grid;
+      place-items: center;
+      min-height: 340px;
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed #b7c1d2;
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+    }
+
+    .empty-icon {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: var(--radius);
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      font-size: 1.8rem;
+      font-weight: 900;
+    }
+
+    .output-card {
+      padding: 16px;
+      box-shadow: none;
+    }
+
+    .output-card.success {
+      border-color: rgba(21, 128, 61, 0.25);
+    }
+
+    .output-card.warning {
+      border-color: rgba(180, 83, 9, 0.28);
+      background: var(--warning-soft);
+    }
+
+    .output-card.error {
+      border-color: rgba(185, 28, 28, 0.28);
+      background: var(--error-soft);
+    }
+
+    .output-card.info {
+      border-color: rgba(37, 99, 235, 0.25);
+      background: var(--blue-soft);
+    }
+
+    .summary-box {
+      padding: 13px;
+      margin: 12px 0;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      border: 1px solid rgba(15, 118, 110, 0.22);
+      border-radius: var(--radius);
+      font-weight: 900;
+    }
+
+    .narrative {
+      color: #344054;
+    }
+
+    .mapping-table {
+      width: 100%;
+      margin: 10px 0 14px;
+      border-collapse: collapse;
+      table-layout: fixed;
+      overflow-wrap: anywhere;
+      font-size: 0.94rem;
+    }
+
+    .mapping-table th,
+    .mapping-table td {
+      padding: 11px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .mapping-table th {
+      color: #344054;
+      background: #edf0f5;
+    }
+
+    .mapping-table tr.updated td {
+      background: var(--success-soft);
+      border-color: rgba(21, 128, 61, 0.3);
+    }
+
+    .warning-note {
+      padding: 12px;
+      color: #854d0e;
+      background: var(--warning-soft);
+      border: 1px solid rgba(180, 83, 9, 0.25);
+      border-radius: var(--radius);
+      font-weight: 800;
+    }
+
+    .correction-section,
+    .edit-section,
+    .manual-card,
+    .follow-up-section {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .supported-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .supported-list span {
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .reason-list,
+    .summary-list {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    .reason-list li,
+    .summary-list li {
+      margin-bottom: 7px;
+    }
+
+    .summary-screen {
+      padding: 18px;
+    }
+
+    .summary-shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .summary-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .summary-card {
+      padding: 18px;
+      box-shadow: none;
+    }
+
+    .check-item {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .check {
+      display: grid;
+      place-items: center;
+      flex: 0 0 23px;
+      width: 23px;
+      height: 23px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--success);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .evidence-placeholder {
+      min-height: 130px;
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed #b7c1d2;
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+      font-weight: 800;
+    }
+
+    @media (max-width: 1080px) {
+      .intro-shell,
+      .workspace-grid,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .intro-card {
+        min-height: auto;
+      }
+
+      .panel {
+        overflow: visible;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .top-header {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .header-center,
+      .header-right {
+        justify-self: start;
+      }
+
+      .workspace-grid,
+      .summary-screen {
+        padding: 10px;
+      }
+
+      .slice-list li {
+        grid-template-columns: 1fr;
+      }
+
+      .option-grid,
+      .evidence-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mapping-table {
+        font-size: 0.86rem;
+      }
+
+      .mapping-table th,
+      .mapping-table td {
+        padding: 8px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="app">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="back-link"><i class="ti ti-arrow-left"></i> Back to course page</div>
-                <div class="course-title">AI.20K - Cohort 2</div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="progress-pct">12%</div>
-            </div>
-            <div class="sidebar-tabs">
-                <div class="tab active">Path</div>
-                <div class="tab">Learners</div>
-                <div class="tab">Discuss</div>
-            </div>
-            <div class="sidebar-nav">
-                <div class="nav-item"><i class="ti ti-circle-check"
-                        style="color:#4ade80;font-size:14px;margin-top:1px;flex-shrink:0"></i>1. Attendance</div>
-                <div class="nav-item"><i class="ti ti-circle-check"
-                        style="color:#4ade80;font-size:14px;margin-top:1px;flex-shrink:0"></i>2. Day 1 (28/05): AI &amp;
-                    LLM Foundation</div>
-                <div class="nav-item"><i class="ti ti-circle-check"
-                        style="color:#4ade80;font-size:14px;margin-top:1px;flex-shrink:0"></i>3. Day 2 (29/05): Xác định
-                    Bài toán cho AI</div>
-                <div class="nav-item"><i class="ti ti-circle-check"
-                        style="color:#4ade80;font-size:14px;margin-top:1px;flex-shrink:0"></i>4. Day 3 (01/06): Design
-                    Pattern ReAct (Ki...</div>
-                <div class="nav-item"><i class="ti ti-circle-check"
-                        style="color:#4ade80;font-size:14px;margin-top:1px;flex-shrink:0"></i>5. Day 4 (02/06): Prompt
-                    Engineering &amp; To...</div>
-                <div class="nav-item"><i class="ti ti-circle-check"
-                        style="color:#4ade80;font-size:14px;margin-top:1px;flex-shrink:0"></i>6. Day 5 (03/06): AI
-                    Product Thinking &amp; Re...</div>
-                <div class="nav-item active"><i class="ti ti-book"
-                        style="color:#4a9eff;font-size:14px;margin-top:1px;flex-shrink:0"></i>7. Day 6 (04/06): AI
-                    Product Prototype &amp; D...</div>
-                <div class="nav-sub active"><i class="ti ti-file-text" style="font-size:12px"></i>Day 06 - Demo Day <i
-                        class="ti ti-check" style="font-size:11px;margin-left:auto;color:#4ade80"></i></div>
-                <div class="nav-sub"><i class="ti ti-help-circle" style="font-size:12px"></i>Day 06 - Nộp bài Nhóm
-                    (deadline: 23:...)</div>
-            </div>
-        </aside>
-
-        <!-- Main -->
-        <main class="main">
-            <div class="topbar">
-                <button class="nav-btn"><i class="ti ti-chevron-left"></i> previous</button>
-                <div class="page-info">
-                    <input class="page-input" value="2" readonly>
-                    trên 8
-                    <button class="zoom-btn">−</button>
-                    <button class="zoom-btn">+</button>
-                    <span style="font-size:11px;color:var(--text-muted);margin-left:4px;">Tự động chọn kích thước</span>
-                </div>
-                <button class="nav-btn">next <i class="ti ti-chevron-right"></i></button>
-            </div>
-
-            <div class="timeline">
-                <div class="you-label">BẠN Ở ĐÂY <i class="ti ti-run"></i></div>
-                <div class="timeline-track">
-                    <div class="tl-dot done"><i class="ti ti-check"></i></div>
-                    <div class="tl-line done"></div>
-                    <div class="tl-dot current"></div>
-                    <div class="tl-line"></div>
-                    <div class="tl-dot"></div>
-                    <div class="tl-line"></div>
-                    <div class="tl-dot"></div>
-                    <div class="tl-line"></div>
-                    <div class="tl-dot"></div>
-                    <div class="tl-line"></div>
-                    <div class="tl-dot"></div>
-                </div>
-                <div class="tl-labels">
-                    <div class="tl-label"><strong>09:00</strong>Bắt đầu</div>
-                    <div class="tl-label"><strong>11:00</strong>Checkpoint 1</div>
-                    <div class="tl-label"><strong>13:00</strong>Checkpoint 2</div>
-                    <div class="tl-label"><strong>14:00</strong>Tiếp tục</div>
-                    <div class="tl-label"><strong>15:30</strong>Checkpoint 3</div>
-                    <div class="tl-label"><strong>16:00</strong>Demo</div>
-                </div>
-            </div>
-
-            <div class="content" id="content">
-                <div class="page-title">🚀 Day 06: AI Product Hackathon</div>
-                <div class="info-block">
-                    <p><strong>09:00 → 11:00 &nbsp; BUILD</strong><br>
-                        Bắt đầu từ <span class="highlight">SPEC nhẹ</span> đã làm ở Day 5. Chọn 1 flow lỗi để làm trước.
-                    </p>
-                </div>
-                <div class="cards-row">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon green"><i class="ti ti-circle-check"></i></div>
-                            <div class="card-meta">
-                                <div class="card-label">Đã phải xong</div>
-                                <span class="badge done">Hoàn thành</span>
-                            </div>
-                        </div>
-                        <ul>
-                            <li><span class="highlight">SPEC nhẹ</span> Day 5 sẵn sàng — chọn 1 flow lỗi để làm trước.
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon blue"><i class="ti ti-tools"></i></div>
-                            <div class="card-meta">
-                                <div class="card-label">Việc cần làm</div>
-                                <span class="badge todo">Đang làm</span>
-                            </div>
-                        </div>
-                        <ul>
-                            <li>Dựng <span class="highlight">mockup</span> đủ luồng end-to-end (happy + error path),
-                                chưa cần gắn AI</li>
-                            <li>Chia task: vẽ flow · dựng mockup · lấy data · tối ưu <span
-                                    class="highlight">prompt</span> · code phần AI</li>
-                            <li>Chọn 1 flow để chuẩn bị gắn AI</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon red"><i class="ti ti-target"></i></div>
-                            <div class="card-meta">
-                                <div class="card-label">Sắp tới</div>
-                                <span class="badge soon">11:00 · CP1</span>
-                            </div>
-                        </div>
-                        <ul>
-                            <li><strong>11:00 · Checkpoint 1</strong></li>
-                            <li>mockup / prototype chạy được.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="section-title">Hướng dẫn chi tiết</div>
-                <p class="body-text">
-                    Trong giai đoạn BUILD, nhóm cần tập trung vào việc hiện thực hóa <span
-                        class="highlight">prototype</span> từ SPEC.
-                    Ưu tiên flow <em>happy path</em> trước, sau đó xử lý <span class="highlight">error path</span>.
-                    Kỹ thuật <span class="highlight">RAG</span> có thể được áp dụng để tăng độ chính xác cho AI.
-                    Mỗi thành viên nên nhận 1 nhiệm vụ cụ thể và sync lại trước Checkpoint 1.
-                    <span class="highlight">LangGraph</span> giúp định nghĩa workflow của agent theo dạng đồ thị rõ
-                    ràng.
-                </p>
-
-                <div class="selection-hint">
-                    <i class="ti ti-bulb" style="color:var(--accent);font-size:16px"></i>
-                    Bôi đen bất kỳ từ nào bạn chưa hiểu, rồi bấm <strong style="margin:0 4px">Thư ký Kim</strong> để
-                    nhận giải thích theo sở thích cá nhân.
-                </div>
-            </div>
-
-            <div class="ask-bar">
-                <div class="ask-hint" id="ask-hint">Bôi đen một từ trong nội dung, rồi bấm <span>Thư ký Kim</span></div>
-                <button class="ask-btn" id="ask-btn" disabled>
-                    <i class="ti ti-message-question"></i> Thư ký Kim
-                </button>
-            </div>
-        </main>
-    </div>
-
-    <!-- Popup -->
-    <div class="overlay" id="overlay">
-        <div class="popup">
-            <div id="popup-input-view">
-                <div class="popup-title">Thư ký Kim</div>
-                <div class="popup-concept">Khái niệm: <span class="concept-chip" id="popup-concept"></span></div>
-
-                <!-- Editable Plan -->
-                <div class="plan-section" id="plan-section">
-                    <div class="plan-section-title"><i class="ti ti-list-check" style="font-size:13px"></i> Kế hoạch (có
-                        thể chỉnh)</div>
-                    <div class="plan-steps">
-                        <div class="plan-step"><span class="plan-num">1</span><input class="plan-input"
-                                value="Kiểm tra khái niệm trong domain AI"></div>
-                        <div class="plan-step"><span class="plan-num">2</span><input class="plan-input"
-                                value="Đánh giá độ cụ thể của sở thích"></div>
-                        <div class="plan-step"><span class="plan-num">3</span><input class="plan-input"
-                                value="Map thành phần kỹ thuật sang ngữ cảnh quen thuộc"></div>
-                        <div class="plan-step"><span class="plan-num">4</span><input class="plan-input"
-                                value="Viết analogy narrative"></div>
-                        <div class="plan-step"><span class="plan-num">5</span><input class="plan-input"
-                                value="Tạo bảng mapping để bạn kiểm tra"></div>
-                    </div>
-                </div>
-
-                <label>Sở thích của bạn là gì?</label>
-                <input type="text" id="interest-input" placeholder="Ví dụ: bóng đá, nấu ăn, âm nhạc cụ thể..." />
-                <div class="input-hint" id="input-hint"></div>
-                <div class="popup-btns">
-                    <button class="btn-cancel" id="btn-cancel">Huỷ</button>
-                    <button class="btn-send" id="btn-send">Gửi <i class="ti ti-send"></i></button>
-                </div>
-            </div>
-
-            <div id="popup-result-view" style="display:none">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div class="spinner" id="popup-spinner"></div>
-                        <span id="popup-result-label"
-                            style="font-size:13px;font-weight:600;color:var(--text-muted);">Vui lòng đợi thư ký
-                            Kim...</span>
-                    </div>
-                    <button class="btn-cancel" id="popup-close" style="padding:4px 10px;font-size:12px;">✕</button>
-                </div>
-                <div class="timeout-bar" style="margin-bottom:10px;">
-                    <div class="timeout-fill" id="popup-timeout-fill"></div>
-                </div>
-
-                <!-- Showing Work -->
-                <div class="showing-work" id="showing-work" style="display:none">
-                    <div class="work-steps" id="work-steps">
-                        <div class="work-step" data-step="1"><i class="ti ti-circle step-icon"></i><span>Kiểm tra khái
-                                niệm trong domain AI</span></div>
-                        <div class="work-step" data-step="2"><i class="ti ti-circle step-icon"></i><span>Đánh giá độ cụ
-                                thể của sở thích</span></div>
-                        <div class="work-step" data-step="3"><i class="ti ti-circle step-icon"></i><span>Map thành phần
-                                kỹ thuật</span></div>
-                        <div class="work-step" data-step="4"><i class="ti ti-circle step-icon"></i><span>Viết analogy
-                                narrative</span></div>
-                        <div class="work-step" data-step="5"><i class="ti ti-circle step-icon"></i><span>Tạo bảng
-                                mapping</span></div>
-                    </div>
-                </div>
-
-                <div id="popup-result-content" style="max-height:340px;overflow-y:auto;"></div>
-            </div>
+  <main id="introScreen" class="screen intro-screen active" aria-label="Product Intro và Build Slice">
+    <div class="intro-shell">
+      <section class="intro-card">
+        <div class="intro-meta">
+          <span class="badge primary">AI Product Sprint</span>
+          <span class="badge info">Level 2 Mock Prototype</span>
+          <span class="badge warning">Chưa gắn AI thật</span>
         </div>
+        <h1>Máy Dịch Khái Niệm</h1>
+        <p class="lead">Biến khái niệm AI khó hiểu thành ví dụ gần gũi với sở thích cá nhân của bạn.</p>
+        <div class="prompt-note">
+          <strong>Ý tưởng sản phẩm:</strong>
+          Học viên AI beginner thường đọc định nghĩa kỹ thuật nhiều lần nhưng vẫn khó hình dung. Prototype này mô phỏng cách AI tạo analogy cá nhân hóa, còn user kiểm tra mapping trước khi tin kết quả.
+        </div>
+        <div class="button-row" style="margin-top: 24px;">
+          <button id="startButton" class="primary-button" type="button">Bắt đầu prototype</button>
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="info-card">
+          <h2>Build Slice</h2>
+          <ul class="slice-list">
+            <li><strong>User</strong><span>Học viên AI beginner</span></li>
+            <li><strong>Task</strong><span>Hiểu một khái niệm AI khó</span></li>
+            <li><strong>AI Decision</strong><span>Tạo analogy cá nhân hóa + bảng mapping kỹ thuật</span></li>
+            <li><strong>Human Role</strong><span>Reviewer — kiểm tra, sửa và quyết định có dùng kết quả hay không</span></li>
+          </ul>
+        </section>
+
+        <section class="info-card">
+          <h2>Prototype Level</h2>
+          <div class="badge-row">
+            <span class="badge info">Level 2 Mock Prototype</span>
+            <span class="badge neutral">Chưa gắn AI thật</span>
+            <span class="badge primary">Rule-based JS</span>
+          </div>
+          <p class="muted" style="margin: 12px 0 0;">Dùng output giả lập để diễn happy path, low-confidence path, failure path, và correction path trong lớp.</p>
+        </section>
+      </aside>
     </div>
+  </main>
 
-    <script>
-        const TIMEOUT_MS = 30_000;
-        const API_URL = '/api/analogy';
+  <main id="workspaceScreen" class="screen workspace-screen" aria-label="Main Workspace">
+    <header class="top-header">
+      <div class="header-left">Máy Dịch Khái Niệm</div>
+      <div class="header-center">Course: AI in Action</div>
+      <div class="header-right">
+        <span>Progress: Day 05 / Level 2 Prototype</span>
+        <button id="summaryButton" class="ghost-button" type="button">Review Summary</button>
+      </div>
+    </header>
 
-        const askBtn = document.getElementById('ask-btn');
-        const askHint = document.getElementById('ask-hint');
-        const overlay = document.getElementById('overlay');
-        const popupConcept = document.getElementById('popup-concept');
-        const interestInput = document.getElementById('interest-input');
-        const inputHint = document.getElementById('input-hint');
-        const btnCancel = document.getElementById('btn-cancel');
-        const btnSend = document.getElementById('btn-send');
-        const popupClose = document.getElementById('popup-close');
-        const inputView = document.getElementById('popup-input-view');
-        const resultView = document.getElementById('popup-result-view');
-        const popupSpinner = document.getElementById('popup-spinner');
-        const popupLabel = document.getElementById('popup-result-label');
-        const popupContent = document.getElementById('popup-result-content');
-        const showingWork = document.getElementById('showing-work');
+    <section class="workspace-grid">
+      <aside class="panel" aria-label="Prompt Input">
+        <div class="panel-title">
+          <div>
+            <h2>Prompt</h2>
+            <p class="muted small" style="margin: 6px 0 0;">Chọn khái niệm AI và sở thích cụ thể để hệ thống tạo analogy cá nhân hóa.</p>
+          </div>
+          <span id="inputStateBadge" class="badge neutral">Draft</span>
+        </div>
 
-        let selectedConcept = '';
-        let lastConcept = '';
-        let lastInterest = '';
-        let workTimer = null;
+        <div class="field">
+          <label for="conceptSelect">Khái niệm AI</label>
+          <select id="conceptSelect">
+            <option>Embedding</option>
+            <option>Token</option>
+            <option>Prompt</option>
+            <option>RAG</option>
+            <option>Vector Database</option>
+            <option>LLM</option>
+            <option>Fine-tuning</option>
+            <option>Hallucination</option>
+            <option>Khái niệm khác</option>
+          </select>
+        </div>
 
-        // ── Views ────────────────────────────────────────────────────────────────
-        function showInputView() { inputView.style.display = ''; resultView.style.display = 'none'; }
-        function showResultView() { inputView.style.display = 'none'; resultView.style.display = ''; }
-        function closeOverlay() { overlay.classList.remove('show'); showInputView(); stopWork(); }
+        <div class="field">
+          <label for="interestSelect">Sở thích cá nhân</label>
+          <select id="interestSelect">
+            <option>Bóng đá</option>
+            <option>Bóng rổ</option>
+            <option>Cầu lông</option>
+            <option>Chạy bộ</option>
+            <option>Guitar</option>
+            <option>Nấu ăn</option>
+            <option>Game</option>
+            <option>Chụp ảnh</option>
+            <option>Thể thao</option>
+            <option>Âm nhạc</option>
+            <option>Đời sống</option>
+          </select>
+        </div>
 
-        // ── Showing Work ─────────────────────────────────────────────────────────
-        const WORK_LABELS = [
-            'Kiểm tra khái niệm trong domain AI',
-            'Đánh giá độ cụ thể của sở thích',
-            'Map thành phần kỹ thuật',
-            'Viết analogy narrative',
-            'Tạo bảng mapping',
+        <div class="field">
+          <label for="levelSelect">Mức độ hiểu hiện tại</label>
+          <select id="levelSelect">
+            <option>Chưa hiểu gì</option>
+            <option>Đã đọc định nghĩa nhưng chưa hình dung được</option>
+            <option>Hiểu sơ sơ nhưng chưa giải thích lại được</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="goalSelect">Mục tiêu học</label>
+          <select id="goalSelect">
+            <option>Hiểu để nhớ</option>
+            <option>Hiểu để giải thích lại</option>
+            <option>Hiểu để làm bài/project</option>
+          </select>
+        </div>
+
+        <div class="prompt-note">
+          <strong>Prompt UI:</strong>
+          Prototype dùng dropdown để kiểm thử rõ ràng. User không bị bắt tự viết prompt từ đầu.
+        </div>
+
+        <button id="generateButton" class="primary-button" type="button" style="width: 100%; margin-top: 14px;">Tạo analogy</button>
+      </aside>
+
+      <section class="panel" aria-label="Editable Plan và Showing Work">
+        <div class="panel-title">
+          <div>
+            <h2>Editable Plan</h2>
+            <p class="muted small" style="margin: 6px 0 0;">Kế hoạch nháp để user xem trước khi tin output.</p>
+          </div>
+          <span id="planBadge" class="badge info">Inspectable</span>
+        </div>
+
+        <div id="planList" class="plan-list">
+          <div class="plan-card"><span class="plan-number">1</span><textarea aria-label="Plan step 1">Xác định khái niệm cần giải thích</textarea></div>
+          <div class="plan-card"><span class="plan-number">2</span><textarea aria-label="Plan step 2">Kiểm tra sở thích có đủ cụ thể không</textarea></div>
+          <div class="plan-card"><span class="plan-number">3</span><textarea aria-label="Plan step 3">Map thành phần kỹ thuật sang ngữ cảnh quen thuộc</textarea></div>
+          <div class="plan-card"><span class="plan-number">4</span><textarea aria-label="Plan step 4">Viết analogy narrative</textarea></div>
+          <div class="plan-card"><span class="plan-number">5</span><textarea aria-label="Plan step 5">Tạo bảng mapping để user kiểm tra</textarea></div>
+          <div class="plan-card"><span class="plan-number">6</span><textarea aria-label="Plan step 6">Gợi ý bước tiếp theo</textarea></div>
+        </div>
+
+        <div class="trust-note" style="margin-top: 14px;">AI chỉ là người hỗ trợ tạo nháp. Bạn là người kiểm tra cuối cùng.</div>
+
+        <div class="status-card" style="margin-top: 14px;">
+          <h3>Showing Work</h3>
+          <p id="workStatus" class="muted small">Chưa chạy. Khi tạo analogy, các bước AI xử lý sẽ hiện ở đây.</p>
+          <div id="workList" class="work-list">
+            <div class="work-step" data-step="1"><span class="work-mark">1</span><span>Đang kiểm tra khái niệm...</span></div>
+            <div class="work-step" data-step="2"><span class="work-mark">2</span><span>Đang đánh giá độ cụ thể của sở thích...</span></div>
+            <div class="work-step" data-step="3"><span class="work-mark">3</span><span>Đang map thành phần kỹ thuật...</span></div>
+            <div class="work-step" data-step="4"><span class="work-mark">4</span><span>Đang tạo analogy narrative...</span></div>
+            <div class="work-step" data-step="5"><span class="work-mark">5</span><span>Đang tạo bảng mapping...</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel output-panel" aria-label="Output Review Follow-up">
+        <div class="panel-title">
+          <div>
+            <h2>Kết quả AI mô phỏng</h2>
+            <p class="muted small" style="margin: 6px 0 0;">AI output tách khỏi quyết định của user.</p>
+          </div>
+          <span id="outputBadge" class="badge neutral">Empty</span>
+        </div>
+        <div id="outputPanel"></div>
+      </section>
+    </section>
+  </main>
+
+  <main id="summaryScreen" class="screen summary-screen" aria-label="Review Summary và Evidence">
+    <div class="summary-shell">
+      <header class="summary-header">
+        <div>
+          <span class="badge info">Screen 3</span>
+          <h1 style="font-size: clamp(2rem, 4vw, 3.2rem); margin: 10px 0 6px;">Review Summary / Evidence</h1>
+          <p class="muted" style="margin: 0;">Tóm tắt giá trị của mock prototype và các đường AI behavior đã demo.</p>
+        </div>
+        <div class="button-row">
+          <button id="backWorkspaceButton" class="secondary-button" type="button">Quay lại workspace</button>
+          <button id="restartButton" class="ghost-button" type="button">Restart prototype</button>
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <article class="summary-card">
+          <h2>Luồng đã demo</h2>
+          <div class="check-item"><span class="check">✓</span><span>Happy Path: AI tự tin và tạo analogy đúng</span></div>
+          <div class="check-item"><span class="check">✓</span><span>Low-confidence Path: AI hỏi lại khi input mơ hồ</span></div>
+          <div class="check-item"><span class="check">✓</span><span>Failure Path: AI không hỗ trợ hoặc confidence thấp</span></div>
+          <div class="check-item"><span class="check">✓</span><span>Correction Path: User sửa và hệ thống ghi nhận tín hiệu học tập</span></div>
+        </article>
+
+        <article class="summary-card">
+          <h2>Human-in-the-loop</h2>
+          <ul class="summary-list">
+            <li><strong>Reviewer:</strong> User kiểm tra analogy và mapping</li>
+            <li><strong>Decider:</strong> User chọn phương án cụ thể khi AI không chắc</li>
+            <li><strong>Rescuer:</strong> User can thiệp khi AI lỗi hoặc không đủ confidence</li>
+          </ul>
+        </article>
+
+        <article class="summary-card">
+          <h2>AI Trust UI</h2>
+          <ul class="summary-list">
+            <li><strong>Prompt:</strong> Gợi ý cách bắt đầu</li>
+            <li><strong>Editable Plan:</strong> Cho user xem kế hoạch trước khi tin kết quả</li>
+            <li><strong>Showing Work:</strong> Minh bạch quá trình AI xử lý</li>
+            <li><strong>Follow-up:</strong> Gợi ý bước tiếp theo sau output</li>
+          </ul>
+        </article>
+
+        <article class="summary-card">
+          <h2>Evidence</h2>
+          <p class="muted">Placeholder cho bằng chứng demo và painpoint người dùng.</p>
+          <ul class="summary-list">
+            <li>Ảnh chụp nỗi đau người dùng thật</li>
+            <li>Ví dụ: học viên đọc định nghĩa Embedding nhưng vẫn không hình dung được</li>
+            <li>Ví dụ: analogy gắn với bóng đá giúp hiểu nhanh hơn</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="summary-card">
+        <h2>Evidence placeholders</h2>
+        <div class="evidence-grid">
+          <div class="evidence-placeholder">Evidence screenshot 1</div>
+          <div class="evidence-placeholder">Evidence screenshot 2</div>
+          <div class="evidence-placeholder">User quote / observation</div>
+        </div>
+      </section>
+
+      <section class="summary-card">
+        <h2>Thông điệp cuối</h2>
+        <p style="margin: 0; font-weight: 900;">Prototype này chưa chứng minh AI hoạt động tốt. Prototype này chứng minh rằng sản phẩm đã thiết kế được cách xử lý khi AI đúng, khi AI không chắc, khi AI sai, và khi user cần sửa.</p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const supportedConcepts = [
+      "Embedding",
+      "Token",
+      "Prompt",
+      "RAG",
+      "Vector Database",
+      "LLM",
+      "Fine-tuning",
+      "Hallucination"
+    ];
+
+    const genericInterests = {
+      "Thể thao": {
+        message: "Sở thích ‘Thể thao’ hơi rộng. Bạn có thể chọn môn cụ thể hơn để analogy dễ hiểu hơn không?",
+        options: ["Bóng đá", "Bóng rổ", "Cầu lông", "Chạy bộ"]
+      },
+      "Âm nhạc": {
+        message: "Sở thích ‘Âm nhạc’ hơi rộng. Bạn có thể chọn cụ thể hơn không?",
+        options: ["Guitar"]
+      },
+      "Đời sống": {
+        message: "Sở thích ‘Đời sống’ hơi rộng. Bạn có thể chọn ngữ cảnh cụ thể hơn không?",
+        options: ["Nấu ăn", "Game", "Chụp ảnh"]
+      }
+    };
+
+    const sceneData = {
+      "Bóng đá": {
+        item: "cầu thủ",
+        vector: "bộ chỉ số của cầu thủ",
+        dimension: "tốc độ, chuyền, sút, phòng ngự",
+        space: "không gian thống kê nơi các cầu thủ được đặt gần hoặc xa nhau",
+        retrieval: "tìm cầu thủ có phong cách gần giống nhất"
+      },
+      "Bóng rổ": {
+        item: "vận động viên bóng rổ",
+        vector: "bộ chỉ số như ném, kiến tạo, rebound",
+        dimension: "ném xa, chuyền, phòng thủ, tốc độ",
+        space: "bảng so sánh phong cách thi đấu",
+        retrieval: "tìm cầu thủ có lối chơi gần giống"
+      },
+      "Cầu lông": {
+        item: "người chơi cầu lông",
+        vector: "bộ chỉ số về tốc độ, lực đánh, phòng thủ",
+        dimension: "di chuyển, bỏ nhỏ, đập cầu, phản xạ",
+        space: "không gian so sánh phong cách thi đấu",
+        retrieval: "tìm người chơi có phong cách gần giống"
+      },
+      "Chạy bộ": {
+        item: "buổi chạy",
+        vector: "bộ chỉ số nhịp tim, pace, quãng đường",
+        dimension: "pace, độ dốc, nhịp tim, thời gian",
+        space: "bản đồ so sánh các buổi chạy",
+        retrieval: "tìm buổi chạy có cảm giác gần giống"
+      },
+      "Guitar": {
+        item: "bài guitar",
+        vector: "bộ đặc điểm như nhịp, hợp âm, kỹ thuật",
+        dimension: "hợp âm, nhịp, tempo, cách gảy",
+        space: "không gian so sánh màu sắc bài nhạc",
+        retrieval: "tìm bài có cách chơi gần giống"
+      },
+      "Nấu ăn": {
+        item: "món ăn",
+        vector: "bộ đặc điểm như nguyên liệu, vị, cách nấu",
+        dimension: "độ cay, độ béo, thời gian nấu, nguyên liệu",
+        space: "không gian so sánh hương vị món ăn",
+        retrieval: "tìm món có khẩu vị gần giống"
+      },
+      "Game": {
+        item: "nhân vật hoặc vật phẩm trong game",
+        vector: "bộ chỉ số sức mạnh, tốc độ, kỹ năng",
+        dimension: "sát thương, tốc độ, máu, kỹ năng",
+        space: "không gian so sánh phong cách chơi",
+        retrieval: "tìm nhân vật có lối chơi gần giống"
+      },
+      "Chụp ảnh": {
+        item: "bức ảnh",
+        vector: "bộ đặc điểm như ánh sáng, màu, bố cục",
+        dimension: "ánh sáng, tiêu cự, màu sắc, chủ thể",
+        space: "không gian so sánh phong cách ảnh",
+        retrieval: "tìm ảnh có mood gần giống"
+      }
+    };
+
+    const state = {
+      timer: null,
+      selectedCorrection: "",
+      corrected: false,
+      editedNarrative: "",
+      lastPath: "empty"
+    };
+
+    const introScreen = document.getElementById("introScreen");
+    const workspaceScreen = document.getElementById("workspaceScreen");
+    const summaryScreen = document.getElementById("summaryScreen");
+    const startButton = document.getElementById("startButton");
+    const summaryButton = document.getElementById("summaryButton");
+    const backWorkspaceButton = document.getElementById("backWorkspaceButton");
+    const restartButton = document.getElementById("restartButton");
+    const generateButton = document.getElementById("generateButton");
+    const conceptSelect = document.getElementById("conceptSelect");
+    const interestSelect = document.getElementById("interestSelect");
+    const levelSelect = document.getElementById("levelSelect");
+    const goalSelect = document.getElementById("goalSelect");
+    const inputStateBadge = document.getElementById("inputStateBadge");
+    const outputBadge = document.getElementById("outputBadge");
+    const planBadge = document.getElementById("planBadge");
+    const outputPanel = document.getElementById("outputPanel");
+    const workStatus = document.getElementById("workStatus");
+
+    startButton.addEventListener("click", () => showScreen("workspace"));
+    summaryButton.addEventListener("click", () => showScreen("summary"));
+    backWorkspaceButton.addEventListener("click", () => showScreen("workspace"));
+    restartButton.addEventListener("click", restartPrototype);
+    generateButton.addEventListener("click", startGeneration);
+
+    [conceptSelect, interestSelect, levelSelect, goalSelect].forEach((control) => {
+      control.addEventListener("change", () => {
+        state.corrected = false;
+        state.selectedCorrection = "";
+        updateInputBadge();
+      });
+    });
+
+    outputPanel.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const value = button.dataset.value;
+
+      if (action === "choose-interest") {
+        interestSelect.value = value;
+        updateInputBadge();
+        renderClarifiedReady(value);
+      }
+
+      if (action === "change-concept") {
+        conceptSelect.value = "Embedding";
+        updateInputBadge();
+        renderEmpty("Đã chuyển về Embedding. Bạn có thể tạo lại analogy.");
+        resetWork("Đã chọn lại khái niệm. Nhấn Tạo analogy để tiếp tục.");
+      }
+
+      if (action === "example-embedding") {
+        conceptSelect.value = "Embedding";
+        interestSelect.value = "Bóng đá";
+        updateInputBadge();
+        startGeneration();
+      }
+
+      if (action === "manual") {
+        renderManualFallback();
+      }
+
+      if (action === "edit-input") {
+        renderEmpty("Bạn có thể sửa input ở panel Prompt rồi tạo lại.");
+        resetWork("Đang chờ user chỉnh input.");
+      }
+
+      if (action === "specific-interest") {
+        renderSpecificInterestPrompt();
+      }
+
+      if (action === "accept") {
+        renderAcceptConfirmation();
+      }
+
+      if (action === "edit-direct") {
+        renderDirectEdit();
+      }
+
+      if (action === "save-edit") {
+        saveDirectEdit();
+      }
+
+      if (action === "reject") {
+        state.corrected = false;
+        startGeneration(true);
+      }
+
+      if (action === "report-missing") {
+        renderCorrectionSection();
+      }
+
+      if (action === "correction-option") {
+        state.selectedCorrection = value;
+        document.querySelectorAll("[data-action='correction-option']").forEach((option) => {
+          option.classList.toggle("selected", option.dataset.value === value);
+        });
+        const submit = document.getElementById("correctionSubmit");
+        if (submit) submit.disabled = false;
+      }
+
+      if (action === "submit-correction") {
+        submitCorrection();
+      }
+
+      if (action === "follow-up") {
+        renderFollowUpConfirmation(value);
+      }
+    });
+
+    function showScreen(name) {
+      introScreen.classList.toggle("active", name === "intro");
+      workspaceScreen.classList.toggle("active", name === "workspace");
+      summaryScreen.classList.toggle("active", name === "summary");
+    }
+
+    function restartPrototype() {
+      clearTimeout(state.timer);
+      state.corrected = false;
+      state.selectedCorrection = "";
+      state.editedNarrative = "";
+      conceptSelect.value = "Embedding";
+      interestSelect.value = "Bóng đá";
+      levelSelect.value = "Chưa hiểu gì";
+      goalSelect.value = "Hiểu để nhớ";
+      updateInputBadge();
+      resetWork("Chưa chạy. Khi tạo analogy, các bước AI xử lý sẽ hiện ở đây.");
+      renderEmpty();
+      showScreen("intro");
+    }
+
+    function decidePath() {
+      const concept = conceptSelect.value;
+      const interest = interestSelect.value;
+
+      if (concept === "Khái niệm khác") return "unsupported";
+      if (concept === "Hallucination" && interest === "Đời sống") return "fallback";
+      if (genericInterests[interest]) return "low-confidence";
+      return "happy";
+    }
+
+    function updateInputBadge() {
+      const path = decidePath();
+      inputStateBadge.className = "badge neutral";
+      inputStateBadge.textContent = "Draft";
+
+      if (path === "happy") {
+        inputStateBadge.className = "badge success";
+        inputStateBadge.textContent = "Specific";
+      }
+
+      if (path === "low-confidence") {
+        inputStateBadge.className = "badge warning";
+        inputStateBadge.textContent = "Cần làm rõ";
+      }
+
+      if (path === "unsupported") {
+        inputStateBadge.className = "badge error";
+        inputStateBadge.textContent = "Không hỗ trợ";
+      }
+
+      if (path === "fallback") {
+        inputStateBadge.className = "badge warning";
+        inputStateBadge.textContent = "Risk cao";
+      }
+    }
+
+    function startGeneration(isRegenerate) {
+      clearTimeout(state.timer);
+      generateButton.disabled = true;
+      state.selectedCorrection = "";
+      if (!isRegenerate) state.corrected = false;
+
+      const path = decidePath();
+      state.lastPath = path;
+      const steps = getWorkSteps(path);
+      runWorkSteps(steps, () => {
+        generateButton.disabled = false;
+        if (path === "happy") renderHappyResult({ regenerated: Boolean(isRegenerate), corrected: false });
+        if (path === "low-confidence") renderLowConfidence();
+        if (path === "unsupported") renderUnsupported();
+        if (path === "fallback") renderFallback();
+      });
+    }
+
+    function getWorkSteps(path) {
+      if (path === "unsupported") {
+        return [
+          { step: 1, text: "Đang kiểm tra khái niệm..." }
         ];
+      }
 
-        function startWork() {
-            showingWork.style.display = '';
-            let step = 0;
-            const steps = document.querySelectorAll('#work-steps .work-step');
-            steps.forEach(s => { s.classList.remove('active', 'done'); s.querySelector('.step-icon').className = 'ti ti-circle step-icon'; });
+      if (path === "low-confidence" || path === "fallback") {
+        return [
+          { step: 1, text: "Đang kiểm tra khái niệm..." },
+          { step: 2, text: "Đang đánh giá độ cụ thể của sở thích..." }
+        ];
+      }
 
-            function tick() {
-                if (step > 0) {
-                    steps[step - 1].classList.remove('active');
-                    steps[step - 1].classList.add('done');
-                    steps[step - 1].querySelector('.step-icon').className = 'ti ti-circle-check step-icon';
-                }
-                if (step < steps.length) {
-                    steps[step].classList.add('active');
-                    steps[step].querySelector('.step-icon').className = 'ti ti-loader step-icon';
-                    step++;
-                    workTimer = setTimeout(tick, 900);
-                }
-            }
-            tick();
+      return [
+        { step: 1, text: "Đang kiểm tra khái niệm..." },
+        { step: 2, text: "Đang đánh giá độ cụ thể của sở thích..." },
+        { step: 3, text: "Đang map thành phần kỹ thuật..." },
+        { step: 4, text: "Đang tạo analogy narrative..." },
+        { step: 5, text: "Đang tạo bảng mapping..." }
+      ];
+    }
+
+    function runWorkSteps(steps, done) {
+      let index = 0;
+      renderLoadingState(steps[0].text);
+
+      const tick = () => {
+        const current = steps[index];
+        markWorkStep(current.step, current.text);
+        renderLoadingState(current.text);
+        index += 1;
+
+        if (index >= steps.length) {
+          state.timer = setTimeout(done, 520);
+        } else {
+          state.timer = setTimeout(tick, 620);
         }
+      };
 
-        function stopWork() {
-            clearTimeout(workTimer);
-            showingWork.style.display = 'none';
+      tick();
+    }
+
+    function markWorkStep(activeStep, text) {
+      document.querySelectorAll(".work-step").forEach((stepEl) => {
+        const stepNumber = Number(stepEl.dataset.step);
+        stepEl.classList.toggle("done", stepNumber < activeStep);
+        stepEl.classList.toggle("active", stepNumber === activeStep);
+      });
+      planBadge.className = "badge info";
+      planBadge.textContent = "Showing Work";
+      workStatus.innerHTML = '<span class="loader" aria-hidden="true"></span> ' + escapeHtml(text);
+    }
+
+    function resetWork(message) {
+      document.querySelectorAll(".work-step").forEach((stepEl) => {
+        stepEl.classList.remove("done", "active");
+      });
+      planBadge.className = "badge info";
+      planBadge.textContent = "Inspectable";
+      workStatus.textContent = message;
+    }
+
+    function setOutputBadge(text, type) {
+      outputBadge.className = "badge " + type;
+      outputBadge.textContent = text;
+    }
+
+    function renderEmpty(message) {
+      setOutputBadge("Empty", "neutral");
+      outputPanel.innerHTML = `
+        <div class="empty-state">
+          <div>
+            <div class="empty-icon">↔</div>
+            <h3>Kết quả sẽ xuất hiện ở đây sau khi bạn tạo analogy.</h3>
+            <p>${escapeHtml(message || "Right panel sẽ hiển thị output, review action và follow-up.")}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLoadingState(message) {
+      setOutputBadge("Processing", "info");
+      outputPanel.innerHTML = `
+        <div class="output-card info">
+          <div class="badge-row">
+            <span class="badge info">AI đang xử lý</span>
+            <span class="badge neutral">Mock only</span>
+          </div>
+          <h3 style="margin-top: 12px;"><span class="loader" aria-hidden="true"></span> ${escapeHtml(message)}</h3>
+          <p class="muted" style="margin-bottom: 0;">Prototype chỉ dùng hardcoded mock data và rule-based JavaScript, không gọi API thật.</p>
+        </div>
+      `;
+    }
+
+    function renderHappyResult(options) {
+      const concept = conceptSelect.value;
+      const interest = interestSelect.value;
+      const data = buildMockOutput(concept, interest, options.corrected);
+      setOutputBadge("Success", "success");
+      planBadge.className = "badge success";
+      planBadge.textContent = "Plan complete";
+      workStatus.textContent = options.regenerated
+        ? "Đã tạo lại analogy sau khi user reject output cũ."
+        : "Đã tạo output. User cần review trước khi dùng.";
+
+      outputPanel.innerHTML = `
+        <article class="output-card success">
+          <div class="badge-row">
+            <span class="badge success">AI tự tin: ${options.regenerated ? "82%" : "86%"}</span>
+            <span class="badge primary">Vai trò của bạn: Reviewer</span>
+            <span class="badge neutral">${escapeHtml(concept)}</span>
+            <span class="badge neutral">${escapeHtml(interest)}</span>
+          </div>
+          <div class="summary-box">${escapeHtml(data.summary)}</div>
+          <h3>Analogy narrative</h3>
+          <p id="narrativeText" class="narrative">${escapeHtml(state.editedNarrative || data.narrative)}</p>
+          <h3>Bảng mapping kỹ thuật</h3>
+          ${renderMappingTable(data.rows)}
+          <div class="warning-note">${escapeHtml(data.warning)}</div>
+          <div class="button-row" style="margin-top: 14px;">
+            <button class="secondary-button" type="button" data-action="accept">Accept / Tôi hiểu rồi</button>
+            <button class="ghost-button" type="button" data-action="edit-direct">Edit trực tiếp</button>
+            <button class="ghost-button" type="button" data-action="reject">Reject / Tạo lại</button>
+            <button class="warning-button" type="button" data-action="report-missing">Báo thiếu mapping</button>
+          </div>
+          <div id="decisionSlot"></div>
+          ${renderFollowUps()}
+        </article>
+      `;
+    }
+
+    function buildMockOutput(concept, interest, corrected) {
+      if (concept === "Embedding" && interest === "Bóng đá") {
+        return {
+          summary: "Embedding giống như cách biểu diễn mỗi cầu thủ bằng một bộ chỉ số để máy có thể so sánh họ.",
+          narrative: "Trong bóng đá, nếu chỉ nói tên cầu thủ thì rất khó để so sánh ai giống ai. Nhưng nếu mỗi cầu thủ được biểu diễn bằng nhiều chỉ số như tốc độ, khả năng chuyền bóng, sút bóng, phòng ngự và thể lực, ta có thể đặt họ vào một không gian so sánh. Hai cầu thủ có bộ chỉ số gần nhau thì được xem là có phong cách giống nhau. Embedding trong AI cũng tương tự: thay vì để dữ liệu ở dạng chữ hoặc đối tượng thô, hệ thống biến chúng thành vector số để máy có thể so sánh, tìm kiếm và phân nhóm.",
+          rows: [
+            ["Dữ liệu gốc", "Cầu thủ"],
+            ["Embedding vector", "Bộ chỉ số của cầu thủ"],
+            ["Dimension", "Từng loại chỉ số như tốc độ, chuyền, sút, phòng ngự"],
+            ["Vector space", corrected ? "Không gian thống kê nơi các cầu thủ được đặt gần hoặc xa nhau dựa trên bộ chỉ số." : "Không gian thống kê nơi các cầu thủ được đặt gần hoặc xa nhau", corrected],
+            ["Similarity", "Mức độ giống nhau giữa hai cầu thủ dựa trên bộ chỉ số"],
+            ["Search / retrieval", "Tìm cầu thủ có phong cách gần giống nhất"]
+          ],
+          warning: "Đừng tin analogy chỉ vì nghe hợp lý. Hãy kiểm tra bảng mapping để chắc rằng AI không bỏ sót thành phần kỹ thuật quan trọng."
+        };
+      }
+
+      const scene = sceneData[interest] || sceneData["Bóng đá"];
+      return {
+        summary: `${concept} được giải thích qua ngữ cảnh ${interest}: biến ý kỹ thuật thành một tình huống quen thuộc để dễ nhớ hơn.`,
+        narrative: `Hãy tưởng tượng bạn đang học ${concept} qua ${interest.toLowerCase()}. Thay vì cố nhớ định nghĩa trừu tượng, prototype dùng một hình ảnh quen thuộc như ${scene.item}, ${scene.vector} và ${scene.space}. Khi các phần trong ví dụ được đặt cạnh nhau, bạn có thể nhìn thấy dữ liệu được biểu diễn, so sánh và tìm lại như thế nào. Analogy này chỉ là bản nháp để mở khóa hình dung ban đầu; phần quan trọng là bảng mapping bên dưới, nơi bạn kiểm tra xem từng thành phần kỹ thuật đã được nối đúng chưa.`,
+        rows: [
+          ["Dữ liệu / input", capitalize(scene.item)],
+          ["Biểu diễn trung gian", capitalize(scene.vector)],
+          ["Thuộc tính quan trọng", capitalize(scene.dimension)],
+          ["Không gian so sánh", corrected ? capitalize(scene.space) + " dựa trên bộ đặc điểm đã chọn." : capitalize(scene.space), corrected],
+          ["Mức độ giống nhau", "So sánh khoảng cách giữa các đối tượng trong ví dụ"],
+          ["Tìm kiếm / retrieval", capitalize(scene.retrieval)]
+        ],
+        warning: "Đừng tin analogy chỉ vì nghe hợp lý. Hãy kiểm tra bảng mapping để chắc rằng AI không bỏ sót thành phần kỹ thuật quan trọng."
+      };
+    }
+
+    function renderMappingTable(rows) {
+      return `
+        <table class="mapping-table">
+          <thead>
+            <tr>
+              <th>Thành phần kỹ thuật</th>
+              <th>Trong analogy ${escapeHtml(interestSelect.value.toLowerCase())}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `
+              <tr class="${row[2] ? "updated" : ""}">
+                <td>${escapeHtml(row[0])}</td>
+                <td>${escapeHtml(row[1])}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderFollowUps() {
+      const suggestions = [
+        "Giải thích lại bằng ví dụ nấu ăn",
+        "Cho ví dụ Embedding trong RAG",
+        "Tạo flashcard để ôn lại",
+        "So sánh Embedding với Keyword Search"
+      ];
+
+      return `
+        <div class="follow-up-section">
+          <h3>Follow-up suggestions</h3>
+          <div class="option-grid">
+            ${suggestions.map((item) => `<button class="chip-button" type="button" data-action="follow-up" data-value="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join("")}
+          </div>
+          <div id="followUpSlot"></div>
+        </div>
+      `;
+    }
+
+    function renderAcceptConfirmation() {
+      const slot = document.getElementById("decisionSlot");
+      if (!slot) return;
+      slot.innerHTML = `
+        <div class="output-card success" style="margin-top: 14px;">
+          <strong>Đã chấp nhận kết quả.</strong>
+          <p class="muted" style="margin: 6px 0 0;">Bạn vẫn có thể quay lại sửa nếu thấy mapping chưa đủ.</p>
+        </div>
+      `;
+    }
+
+    function renderDirectEdit() {
+      const slot = document.getElementById("decisionSlot");
+      const narrative = document.getElementById("narrativeText");
+      if (!slot || !narrative) return;
+      slot.innerHTML = `
+        <div class="edit-section">
+          <label for="directEditBox">Edit trực tiếp narrative</label>
+          <textarea id="directEditBox">${escapeHtml(narrative.textContent)}</textarea>
+          <button class="primary-button" type="button" data-action="save-edit" style="margin-top: 10px;">Lưu chỉnh sửa</button>
+        </div>
+      `;
+    }
+
+    function saveDirectEdit() {
+      const box = document.getElementById("directEditBox");
+      const narrative = document.getElementById("narrativeText");
+      const slot = document.getElementById("decisionSlot");
+      if (!box || !narrative || !slot) return;
+      state.editedNarrative = box.value.trim();
+      narrative.textContent = state.editedNarrative || narrative.textContent;
+      slot.innerHTML = `
+        <div class="output-card success" style="margin-top: 14px;">
+          <strong>Đã lưu chỉnh sửa trực tiếp.</strong>
+          <p class="muted" style="margin: 6px 0 0;">Đây là phần user quyết định lại output thay vì tin AI hoàn toàn.</p>
+        </div>
+      `;
+    }
+
+    function renderFollowUpConfirmation(value) {
+      const slot = document.getElementById("followUpSlot");
+      if (!slot) return;
+      slot.innerHTML = `
+        <div class="output-card info" style="margin-top: 12px;">
+          <strong>Đã chọn follow-up:</strong> ${escapeHtml(value)}
+          <p class="muted" style="margin: 6px 0 0;">Trong bản thật, đây có thể mở tiếp một prompt học tập mới.</p>
+        </div>
+      `;
+    }
+
+    function renderLowConfidence() {
+      const interest = interestSelect.value;
+      const data = genericInterests[interest];
+      setOutputBadge("Low confidence", "warning");
+      planBadge.className = "badge warning";
+      planBadge.textContent = "Needs decision";
+      workStatus.textContent = "AI dừng trước khi tạo final answer vì input còn mơ hồ.";
+
+      outputPanel.innerHTML = `
+        <div class="output-card warning">
+          <div class="badge-row">
+            <span class="badge warning">AI chưa chắc: 48%</span>
+            <span class="badge primary">Vai trò của bạn: Decider</span>
+          </div>
+          <h3 style="margin-top: 12px;">Cần làm rõ trước khi tạo output</h3>
+          <p>${escapeHtml(data.message)}</p>
+          <div class="button-row">
+            ${data.options.map((item) => `<button class="chip-button" type="button" data-action="choose-interest" data-value="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderClarifiedReady(value) {
+      setOutputBadge("Ready", "success");
+      outputPanel.innerHTML = `
+        <div class="output-card success">
+          <div class="badge-row">
+            <span class="badge success">Đã cụ thể hơn</span>
+            <span class="badge primary">Vai trò của bạn: Decider</span>
+          </div>
+          <h3 style="margin-top: 12px;">Đã chọn: ${escapeHtml(value)}</h3>
+          <p class="muted">Nhấn “Tạo analogy” để chạy lại và nhận output.</p>
+        </div>
+      `;
+      resetWork("User đã làm rõ input. Sẵn sàng tạo analogy.");
+    }
+
+    function renderUnsupported() {
+      setOutputBadge("Error", "error");
+      planBadge.className = "badge error";
+      planBadge.textContent = "Recovery";
+      workStatus.textContent = "Prototype không hỗ trợ khái niệm ngoài danh sách.";
+      outputPanel.innerHTML = `
+        <div class="output-card error">
+          <div class="badge-row">
+            <span class="badge error">Không hỗ trợ</span>
+            <span class="badge primary">Vai trò của bạn: Rescuer</span>
+          </div>
+          <h3 style="margin-top: 12px;">Prototype hiện chưa hỗ trợ khái niệm này.</h3>
+          <p>Để giữ prototype đủ nhỏ và kiểm thử được, phiên bản này chỉ hỗ trợ một số khái niệm AI phổ biến.</p>
+          <div class="supported-list">
+            ${supportedConcepts.map((concept) => `<span>${escapeHtml(concept)}</span>`).join("")}
+          </div>
+          <div class="button-row" style="margin-top: 14px;">
+            <button class="ghost-button" type="button" data-action="change-concept">Chọn lại khái niệm</button>
+            <button class="secondary-button" type="button" data-action="example-embedding">Dùng ví dụ Embedding</button>
+            <button class="warning-button" type="button" data-action="manual">Làm thủ công</button>
+          </div>
+          <div id="manualSlot"></div>
+        </div>
+      `;
+    }
+
+    function renderFallback() {
+      setOutputBadge("Fallback", "warning");
+      planBadge.className = "badge warning";
+      planBadge.textContent = "Rescue needed";
+      workStatus.textContent = "Confidence dưới 60%. AI không tạo final analogy.";
+
+      outputPanel.innerHTML = `
+        <div class="output-card warning">
+          <div class="badge-row">
+            <span class="badge warning">Confidence: 42%</span>
+            <span class="badge primary">Vai trò của bạn: Rescuer</span>
+          </div>
+          <h3 style="margin-top: 12px;">Mình chưa đủ tự tin để tạo analogy tốt.</h3>
+          <ul class="reason-list">
+            <li>Khái niệm có rủi ro bị hiểu sai nếu analogy quá đơn giản.</li>
+            <li>Ngữ cảnh ‘Đời sống’ quá rộng.</li>
+            <li>Chưa đủ thông tin để map chính xác các thành phần kỹ thuật.</li>
+          </ul>
+          <div class="button-row" style="margin-top: 14px;">
+            <button class="ghost-button" type="button" data-action="edit-input">Sửa input</button>
+            <button class="secondary-button" type="button" data-action="specific-interest">Chọn sở thích cụ thể hơn</button>
+            <button class="secondary-button" type="button" data-action="example-embedding">Dùng ví dụ Embedding + Bóng đá</button>
+            <button class="warning-button" type="button" data-action="manual">Làm thủ công</button>
+          </div>
+          <div id="manualSlot"></div>
+        </div>
+      `;
+    }
+
+    function renderSpecificInterestPrompt() {
+      outputPanel.innerHTML += `
+        <div class="output-card info" style="margin-top: 12px;">
+          <h3>Chọn một ngữ cảnh cụ thể hơn</h3>
+          <div class="button-row">
+            <button class="chip-button" type="button" data-action="choose-interest" data-value="Nấu ăn">Nấu ăn</button>
+            <button class="chip-button" type="button" data-action="choose-interest" data-value="Game">Game</button>
+            <button class="chip-button" type="button" data-action="choose-interest" data-value="Chụp ảnh">Chụp ảnh</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderManualFallback() {
+      const slot = document.getElementById("manualSlot");
+      const html = `
+        <div class="manual-card">
+          <h3>Làm thủ công</h3>
+          <p>Bạn có thể tự viết analogy bằng mẫu sau:</p>
+          <p style="font-weight: 900;">Khái niệm này giống như ______ trong ______ vì ______.</p>
+          <p class="muted" style="margin-bottom: 0;">Đây là recovery option khi AI lỗi hoặc chưa đủ confidence.</p>
+        </div>
+      `;
+      if (slot) slot.innerHTML = html;
+      else outputPanel.innerHTML += html;
+    }
+
+    function renderCorrectionSection() {
+      const slot = document.getElementById("decisionSlot");
+      if (!slot) return;
+      state.selectedCorrection = "";
+      slot.innerHTML = `
+        <div class="correction-section">
+          <h3>Bạn thấy AI đang thiếu phần nào?</h3>
+          <div class="option-grid">
+            <button class="chip-button" type="button" data-action="correction-option" data-value="Vector space">Vector space</button>
+            <button class="chip-button" type="button" data-action="correction-option" data-value="Similarity">Similarity</button>
+            <button class="chip-button" type="button" data-action="correction-option" data-value="Retrieval">Retrieval</button>
+            <button class="chip-button" type="button" data-action="correction-option" data-value="Dimension">Dimension</button>
+            <button class="chip-button" type="button" data-action="correction-option" data-value="Khác">Khác</button>
+          </div>
+          <button id="correctionSubmit" class="primary-button" type="button" data-action="submit-correction" disabled style="width: 100%; margin-top: 12px;">Gửi góp ý và regenerate</button>
+        </div>
+      `;
+    }
+
+    function submitCorrection() {
+      const slot = document.getElementById("decisionSlot");
+      if (!slot) return;
+
+      if (state.selectedCorrection === "Vector space") {
+        state.corrected = true;
+        state.editedNarrative = "";
+        renderHappyResult({ regenerated: false, corrected: true });
+        const newSlot = document.getElementById("decisionSlot");
+        if (newSlot) {
+          newSlot.innerHTML = `
+            <div class="output-card success" style="margin-top: 14px;">
+              <h3>Cảm ơn bạn đã góp ý. Prototype đã ghi nhận correction signal.</h3>
+              <p><strong>Đã bổ sung phần Vector space vào bảng mapping.</strong></p>
+              <p class="muted" style="margin-bottom: 0;">Đây là lý do prototype luôn yêu cầu user kiểm tra bảng mapping: analogy nghe hợp lý vẫn có thể bỏ sót thành phần kỹ thuật quan trọng.</p>
+            </div>
+          `;
         }
+        return;
+      }
 
-        function finishWork() {
-            clearTimeout(workTimer);
-            const steps = document.querySelectorAll('#work-steps .work-step');
-            steps.forEach(s => {
-                s.classList.remove('active');
-                s.classList.add('done');
-                s.querySelector('.step-icon').className = 'ti ti-circle-check step-icon';
-            });
-            setTimeout(() => { showingWork.style.display = 'none'; }, 600);
-        }
+      slot.innerHTML += `
+        <div class="output-card info" style="margin-top: 12px;">
+          <p class="muted" style="margin-bottom: 0;">Trong demo này, correction path được minh họa rõ nhất với lựa chọn Vector space.</p>
+        </div>
+      `;
+    }
 
-        // ── Selection ────────────────────────────────────────────────────────────
-        document.getElementById('content').addEventListener('mouseup', () => {
-            const sel = window.getSelection();
-            const text = sel ? sel.toString().trim() : '';
-            if (text.length > 1 && text.length < 80) {
-                selectedConcept = text;
-                askBtn.disabled = false;
-                askHint.innerHTML = `Từ đã chọn: <span>${text}</span> — bấm Thư ký Kim để giải thích`;
-            } else if (!text) {
-                selectedConcept = '';
-                askBtn.disabled = true;
-                askHint.innerHTML = 'Bôi đen một từ trong nội dung, rồi bấm <span>Thư ký Kim</span>';
-            }
-        });
+    function capitalize(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
 
-        // ── Open popup ───────────────────────────────────────────────────────────
-        askBtn.addEventListener('click', () => {
-            if (!selectedConcept) return;
-            popupConcept.textContent = selectedConcept;
-            interestInput.value = '';
-            inputHint.textContent = '';
-            interestInput.classList.remove('shake');
-            interestInput.style.borderColor = '';
-            showInputView();
-            overlay.classList.add('show');
-            setTimeout(() => interestInput.focus(), 60);
-        });
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-        btnCancel.addEventListener('click', closeOverlay);
-        popupClose.addEventListener('click', closeOverlay);
-        overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
-        interestInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnSend.click(); });
-        interestInput.addEventListener('input', () => { inputHint.textContent = ''; interestInput.style.borderColor = ''; });
-
-        // ── Validate ─────────────────────────────────────────────────────────────
-        function validateInterest(el) {
-            const val = (el || interestInput).value.trim();
-            if (val.length < 2) {
-                inputHint.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px"></i> Vui lòng nhập sở thích (ít nhất 2 ký tự).';
-                const target = el || interestInput;
-                target.classList.remove('shake');
-                void target.offsetWidth;
-                target.classList.add('shake');
-                target.focus();
-                return false;
-            }
-            return true;
-        }
-
-        // ── Loading ──────────────────────────────────────────────────────────────
-        function startLoading() {
-            showResultView();
-            popupSpinner.style.display = 'inline-block';
-            popupLabel.textContent = 'Vui lòng đợi thư ký Kim thu thập dữ liệu...';
-            popupContent.innerHTML = '';
-            startWork();
-            const fill = document.getElementById('popup-timeout-fill');
-            if (fill) {
-                fill.style.transition = 'none';
-                fill.style.width = '100%';
-                requestAnimationFrame(() => {
-                    fill.style.transition = `width ${TIMEOUT_MS}ms linear`;
-                    fill.style.width = '0%';
-                });
-            }
-        }
-
-        // ── Confidence bar ───────────────────────────────────────────────────────
-        function renderConfBar(conf) {
-            const cls = conf >= 60 ? 'high' : 'low';
-            return `<div class="conf-bar-wrap">
-                <div class="conf-bar-label"><span>Confidence</span><span>${conf}%</span></div>
-                <div class="conf-bar-track"><div class="conf-bar-fill ${cls}" style="width:${conf}%"></div></div>
-            </div>`;
-        }
-
-        // ── Render error ─────────────────────────────────────────────────────────
-        function renderError({ icon, title, detail, isTimeout }) {
-            popupSpinner.style.display = 'none';
-            stopWork();
-            popupLabel.textContent = title;
-            const color = isTimeout ? 'var(--warn-text)' : 'var(--danger-text)';
-            const bg = isTimeout ? 'var(--warn-bg)' : 'var(--danger-bg)';
-            popupContent.innerHTML = `
-                <div class="error-msg" style="background:${bg};color:${color};">
-                    <i class="ti ${icon}" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
-                    <div style="flex:1">
-                        <div>${detail}</div>
-                        <button class="btn-retry" style="color:${color}" id="btn-retry">
-                            <i class="ti ti-refresh"></i> Thử lại
-                        </button>
-                    </div>
-                </div>`;
-            document.getElementById('btn-retry').addEventListener('click', () => triggerCall(lastConcept, lastInterest));
-        }
-
-        // ── Render result ────────────────────────────────────────────────────────
-        function renderResult(data, concept, interest) {
-            popupSpinner.style.display = 'none';
-            finishWork();
-            const conf = Math.round((data.confidence || 0) * 100);
-
-            // Clarification path
-            if (data.needs_clarification) {
-                popupLabel.textContent = 'Thư ký Kim cần thêm thông tin';
-                popupContent.innerHTML = `
-                    <div class="error-msg" style="background:var(--warn-bg);color:var(--warn-text);margin-bottom:12px;">
-                        <i class="ti ti-info-circle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
-                        <span>${data.clarification_question}</span>
-                    </div>
-                    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px;">Sở thích của bạn là gì?</label>
-                    <input id="clarify-input" type="text"
-                        style="width:100%;border:0.5px solid var(--border-secondary);border-radius:var(--radius-md);padding:10px 14px;font-size:14px;margin-bottom:12px;color:var(--text);background:var(--bg);outline:none;"
-                        placeholder="Ví dụ: bóng đá, nấu ăn cụ thể hơn..." />
-                    <div style="display:flex;justify-content:flex-end;gap:8px;">
-                        <button class="btn-cancel" id="clarify-cancel">Huỷ</button>
-                        <button class="btn-send" id="clarify-send">Gửi <i class="ti ti-send"></i></button>
-                    </div>`;
-                document.getElementById('clarify-cancel').addEventListener('click', closeOverlay);
-                document.getElementById('clarify-send').addEventListener('click', () => {
-                    const el = document.getElementById('clarify-input');
-                    const v = el.value.trim();
-                    if (v.length < 2) { el.focus(); return; }
-                    triggerCall(lastConcept, v);
-                });
-                document.getElementById('clarify-input').addEventListener('keydown', e => {
-                    if (e.key === 'Enter') document.getElementById('clarify-send').click();
-                });
-                setTimeout(() => document.getElementById('clarify-input').focus(), 60);
-                return;
-            }
-
-            // ── Fallback path ────────────────────────────────────────────────────
-            if (data.is_fallback) {
-                popupLabel.textContent = 'Thư ký Kim không tìm được analogy phù hợp';
-                popupContent.innerHTML = `
-                    ${renderConfBar(conf)}
-                    <div class="error-msg" style="margin-bottom:10px;">
-                        <i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
-                        <span>${data.fallback_reason}</span>
-                    </div>
-                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text);">
-                        <i class="ti ti-bulb" style="color:var(--accent)"></i> Gợi ý sửa:
-                    </div>
-                    <ol style="padding-left:18px;font-size:13px;color:var(--text-muted);line-height:1.8;">
-                        ${(data.suggestions || []).map(s => `<li>${s}</li>`).join('')}
-                    </ol>
-                    <div style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border);">
-                        <button class="btn-action" id="btn-retype-concept" style="flex:1;justify-content:center;">
-                            <i class="ti ti-pencil"></i> Nhập lại khái niệm
-                        </button>
-                        <button class="btn-action reject" id="btn-retype-interest" style="flex:1;justify-content:center;">
-                            <i class="ti ti-refresh"></i> Đổi sở thích
-                        </button>
-                    </div>`;
-
-                // "Nhập lại khái niệm" → đóng popup, user bôi đen từ mới
-                document.getElementById('btn-retype-concept').addEventListener('click', () => {
-                    closeOverlay();
-                });
-
-                // "Đổi sở thích" → quay về input view, giữ nguyên concept, xoá interest
-                document.getElementById('btn-retype-interest').addEventListener('click', () => {
-                    popupConcept.textContent = lastConcept;
-                    interestInput.value = '';
-                    inputHint.textContent = '';
-                    interestInput.style.borderColor = '';
-                    showInputView();
-                    setTimeout(() => interestInput.focus(), 60);
-                });
-
-                return;
-            }
-
-            // Happy path
-            popupLabel.textContent = `Thư ký Kim giải thích: "${concept}" qua ${interest}`;
-            const confClass = conf >= 60 ? 'conf-high' : 'conf-low';
-            const rows = (data.mapping_table || []).map(m =>
-                `<tr><td><strong>${m.technical_component}</strong></td><td style="color:var(--accent-dark);font-weight:500">${m.analogy_element}</td></tr>`
-            ).join('');
-
-            popupContent.innerHTML = `
-                ${renderConfBar(conf)}
-                <p class="result-narrative" id="result-narrative">${data.narrative}</p>
-                <table class="mapping-table">
-                    <thead><tr><th>Thành phần kỹ thuật</th><th>Trong "${interest}"</th></tr></thead>
-                    <tbody>${rows}</tbody>
-                </table>
-
-                <div class="result-actions">
-                    <button class="btn-action accept" id="btn-accept"><i class="ti ti-circle-check"></i> Accept</button>
-                    <button class="btn-action" id="btn-edit"><i class="ti ti-edit"></i> Sửa narrative</button>
-                    <button class="btn-action reject" id="btn-reject"><i class="ti ti-refresh"></i> Tạo lại</button>
-                    <button class="btn-action report" id="btn-report"><i class="ti ti-flag"></i> Báo thiếu mapping</button>
-                </div>
-                <div id="action-slot"></div>
-
-                <div class="followup-section">
-                    <div class="followup-label"><i class="ti ti-arrow-right" style="font-size:11px"></i> Bước tiếp theo</div>
-                    <div class="followup-chips" id="followup-chips">
-                        <span class="chip" data-q="Giải thích lại bằng ví dụ khác">Ví dụ khác</span>
-                        <span class="chip" data-q="Cho ví dụ ${concept} trong RAG">${concept} trong RAG</span>
-                        <span class="chip" data-q="Tạo câu hỏi ôn tập về ${concept}">Câu hỏi ôn tập</span>
-                        <span class="chip" data-q="So sánh ${concept} với khái niệm liên quan">So sánh khái niệm</span>
-                    </div>
-                    <div id="followup-result"></div>
-                </div>`;
-
-            // Accept
-            document.getElementById('btn-accept').addEventListener('click', () => {
-                document.getElementById('action-slot').innerHTML = `
-                    <div style="margin-top:8px;padding:8px 10px;background:var(--success-bg);border-radius:var(--radius-md);font-size:12px;color:var(--success-text);display:flex;align-items:center;gap:6px;">
-                        <i class="ti ti-check"></i> Đã chấp nhận. Bạn vẫn có thể sửa nếu cần.
-                    </div>`;
-            });
-
-            // Edit narrative
-            document.getElementById('btn-edit').addEventListener('click', () => {
-                const current = document.getElementById('result-narrative').textContent;
-                document.getElementById('action-slot').innerHTML = `
-                    <textarea class="edit-area" id="edit-area">${current}</textarea>
-                    <div style="display:flex;gap:6px;margin-top:6px;justify-content:flex-end;">
-                        <button class="btn-action" id="btn-save-edit"><i class="ti ti-device-floppy"></i> Lưu</button>
-                    </div>`;
-                document.getElementById('btn-save-edit').addEventListener('click', () => {
-                    const val = document.getElementById('edit-area').value.trim();
-                    if (val) document.getElementById('result-narrative').textContent = val;
-                    document.getElementById('action-slot').innerHTML = `
-                        <div style="margin-top:8px;padding:8px 10px;background:var(--success-bg);border-radius:var(--radius-md);font-size:12px;color:var(--success-text);display:flex;align-items:center;gap:6px;">
-                            <i class="ti ti-check"></i> Đã lưu chỉnh sửa.
-                        </div>`;
-                });
-            });
-
-            // Reject / tạo lại
-            document.getElementById('btn-reject').addEventListener('click', () => {
-                triggerCall(lastConcept, lastInterest);
-            });
-
-            // Báo thiếu mapping
-            document.getElementById('btn-report').addEventListener('click', () => {
-                document.getElementById('action-slot').innerHTML = `
-                    <div class="report-section">
-                        <div style="font-size:12px;font-weight:600;color:var(--warn-text);margin-bottom:4px;">
-                            <i class="ti ti-flag"></i> Báo thiếu mapping
-                        </div>
-                        <textarea id="report-text" placeholder="Thành phần nào bị thiếu? Ví dụ: 'Thiếu phần similarity search'"></textarea>
-                        <div style="display:flex;gap:6px;margin-top:6px;justify-content:flex-end;">
-                            <button class="btn-action" id="btn-submit-report"><i class="ti ti-send"></i> Gửi</button>
-                        </div>
-                    </div>`;
-                document.getElementById('btn-submit-report').addEventListener('click', () => {
-                    const val = document.getElementById('report-text').value.trim();
-                    document.getElementById('action-slot').innerHTML = `
-                        <div style="margin-top:8px;padding:8px 10px;background:var(--warn-bg);border-radius:var(--radius-md);font-size:12px;color:var(--warn-text);display:flex;align-items:center;gap:6px;">
-                            <i class="ti ti-check"></i> Đã ghi nhận. Cảm ơn bạn đã báo cáo!
-                        </div>`;
-                });
-            });
-
-            // Follow-up chips
-            document.getElementById('followup-chips').addEventListener('click', e => {
-                const chip = e.target.closest('.chip');
-                if (!chip) return;
-                const q = chip.dataset.q;
-                document.getElementById('followup-result').innerHTML = `
-                    <div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border-radius:var(--radius-md);font-size:12px;color:var(--info-text);display:flex;align-items:center;gap:6px;">
-                        <div class="spinner" style="width:11px;height:11px;border-width:1.5px"></div>
-                        <span>Đang xử lý: "${q}"...</span>
-                    </div>`;
-                setTimeout(() => {
-                    document.getElementById('followup-result').innerHTML = `
-                        <div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border-radius:var(--radius-md);font-size:12px;color:var(--info-text);">
-                            <strong>Gợi ý:</strong> Hãy thử bôi đen một từ mới trong bài để Thư ký Kim giải thích thêm về "${q}".
-                        </div>`;
-                }, 1200);
-            });
-        }
-
-        // ── Core call ────────────────────────────────────────────────────────────
-        async function triggerCall(concept, interest) {
-            lastConcept = concept;
-            lastInterest = interest;
-            startLoading();
-            btnSend.disabled = true;
-
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ concept, interest }),
-                    signal: controller.signal,
-                });
-                clearTimeout(timer);
-                if (!res.ok) {
-                    renderError({ icon: 'ti-server-off', title: `Lỗi server (${res.status})`, detail: `Server trả về HTTP ${res.status}.`, isTimeout: false });
-                    return;
-                }
-                const data = await res.json();
-                renderResult(data, concept, interest);
-            } catch (err) {
-                clearTimeout(timer);
-                if (err.name === 'AbortError') {
-                    renderError({ icon: 'ti-clock', title: 'Hết thời gian chờ (30s)', detail: 'Server không phản hồi sau 30 giây.', isTimeout: true });
-                } else {
-                    renderError({ icon: 'ti-wifi-off', title: 'Không thể kết nối', detail: `Không thể kết nối tới backend. <code style="font-size:11px">${err.message}</code>`, isTimeout: false });
-                }
-            } finally {
-                btnSend.disabled = false;
-            }
-        }
-
-        // ── Send button ──────────────────────────────────────────────────────────
-        btnSend.addEventListener('click', () => {
-            if (!validateInterest()) return;
-            triggerCall(selectedConcept, interestInput.value.trim());
-        });
-    </script>
+    updateInputBadge();
+    renderEmpty();
+  </script>
 </body>
-
 </html>
