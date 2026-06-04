@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
@@ -195,6 +195,16 @@ class AnalogyRequest(BaseModel):
     interest: str
 
 
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[ChatMessage] = Field(default_factory=list)
+
+
 INITIAL_STATE: AgentState = {
     "concept": "",
     "interest": "",
@@ -231,6 +241,40 @@ async def create_analogy(req: AnalogyRequest):
         "narrative": result["narrative"],
         "mapping_table": result["mapping_table"],
     }
+
+
+@app.post("/api/chat")
+async def chat_learning_assistant(req: ChatRequest):
+    history_lines = []
+    for message in req.history[-12:]:
+        content = message.content.strip()
+        if not content:
+            continue
+        speaker = "Người học" if message.role == "user" else "Trợ lý"
+        history_lines.append(f"{speaker}: {content}")
+
+    prompt = f"""Bạn là trợ lý học tập cho khóa AI Product Hackathon.
+
+Phạm vi khóa học:
+{COURSE_CONCEPTS}
+
+Nhiệm vụ:
+- Trả lời bằng tiếng Việt, thân thiện, rõ ý, ưu tiên ví dụ dễ hiểu.
+- Nếu người học hỏi về AI/ML, agent, RAG, prompt, backend/frontend demo, hãy giải thích theo ngữ cảnh khóa học.
+- Nếu câu hỏi mơ hồ, hỏi lại tối đa 1 câu ngắn.
+- Không bịa thông tin; nếu không chắc, nói rõ và gợi ý cách kiểm chứng.
+- Trả lời gọn, thường 3-6 câu, trừ khi người học yêu cầu chi tiết.
+
+Lịch sử trò chuyện gần đây:
+{chr(10).join(history_lines) if history_lines else "(chưa có)"}
+
+Câu hỏi mới của người học:
+{req.message.strip()}
+
+Chỉ trả lời nội dung chat, không trả JSON."""
+
+    answer = build_llm().invoke(prompt).content.strip()
+    return {"answer": answer}
 
 
 @app.get("/health")
